@@ -77,11 +77,11 @@ fn main() {
 
     let cell_interaction_indexes = calc_cell_interactions();
 
-    let mut count = 0.01;
+    let mut count = 0.05;
     for time in 0..NUM_TIME_STEPS {
         if time as f64 > count * NUM_TIME_STEPS as f64 {
             println!("{}%", (count * 100.) as i32);
-            count += 0.01;
+            count += 0.05;
         }
 
         write_positions(&mut atoms, &mut file, time);
@@ -90,6 +90,7 @@ fn main() {
             for k in 0..3 {
                 atom.positions[k] += atom.velocities[k] * timeStep!() + 0.5 * atom.accelerations[k] * timeStep!() * timeStep!();
                 atom.positions[k] += -1. * L!() * f64::floor(atom.positions[k] / L!());
+                atom.old_accelerations[k] = atom.accelerations[k];
             }
         }
 
@@ -129,6 +130,8 @@ fn main() {
     let temp1 = f64::powf(sigma_over_l_over_two, 3.);
     long_range_potential_corrections *= temp - temp1;
     let pestar = ((avg + long_range_potential_corrections) / N as f64) / EPS_STAR;
+    println!("Avg PE: {avg}");
+    println!("Average energy: {}", total_e[total_e.len() - 1]);
     println!("Reduced potential: {}", pestar);
 }
 
@@ -191,13 +194,12 @@ fn calc_forces(atoms: &mut Vec<Atom>, cell_interaction_indexes: &Vec<Vec<i32>>) 
         let z = (atoms[i].positions[2] / cell_length) as i32;
         // Turn coordinates into a cell an atom belongs to
         let c = x * cells_2d as i32 + y * cells_per_dimension as i32 + z;
-        //println!("{} {} {} in cell {}", x, y, z, c);
         // Place atom into that cell
         linked_list[c as usize].push(i as i32);
     }
 
     for c in 0..cells_3d as i32 {
-        net_potential += calc_forces_on_cell(c, atoms, &linked_list, cell_interaction_indexes);
+        net_potential += calc_forces_on_cell(c, atoms, &linked_list, &cell_interaction_indexes);
     }
 
     return net_potential;

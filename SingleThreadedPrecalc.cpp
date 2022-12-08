@@ -34,7 +34,7 @@ public:
 const double Kb = 1.38064582 * std::pow(10, -23); // J / K
 const double Na = 6.022 * std::pow(10, 23); // Atoms per mole
 
-const int numTimeSteps = 5000; // Parameters to change for simulation
+const int numTimeSteps = 10000; // Parameters to change for simulation
 const double dt_star= .001;
 
 const int N = 500; // Number of atoms in simulation
@@ -146,13 +146,6 @@ int main() {
 
     //test << "C\tmc[0]\tmc[1]\tmc[2]\tC1\tmc1[0]\tmc1[1]\tmc1[2]";
     calcCellInteractions();
-    for (int i = 0; i < numCellsXYZ; i++) {
-        for (int j = 0; j < cellInteractionIndexes[i].size(); j++) {
-            std::cout << i << " acts on " << j << std::endl;
-        }
-    }
-    return 0;
-
 
     // Arrays to hold energy values at each step of the process
     std::vector<double> KE;
