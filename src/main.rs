@@ -1,3 +1,4 @@
+#![warn(non_snake_case)]
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::Write;
@@ -49,6 +50,14 @@ struct Atom {
 }
 
 fn main() {
+    let cells_per_dimension = f64::floor(L!() / TARGET_CELL_LENGTH);
+    let cell_length = L!() / cells_per_dimension;
+    let cells_2d = cells_per_dimension * cells_per_dimension;
+    let cells_3d = cells_per_dimension * cells_2d;
+    println!("{} cells per dimension", cells_per_dimension);
+    println!("{} atoms", N);
+    println!("{} cells overall", cells_3d);
+    println!("{} cell length", cell_length);
     let mut file = File::create("out.xyz").expect("File not created");
 
     let mut ke: Vec<f64> = Vec::new();
@@ -71,7 +80,7 @@ fn main() {
     let mut count = 0.01;
     for time in 0..NUM_TIME_STEPS {
         if time as f64 > count * NUM_TIME_STEPS as f64 {
-            println!("{}%", count * 100.);
+            println!("{}%", (count * 100.) as i32);
             count += 0.01;
         }
 
@@ -166,18 +175,23 @@ fn calc_forces(atoms: &mut Vec<Atom>, cell_interaction_indexes: &Vec<Vec<i32>>) 
     let cell_length = L!() / cells_per_dimension;
     let cells_2d = cells_per_dimension * cells_per_dimension;
     let cells_3d = cells_per_dimension * cells_2d;
-    let mut linked_list: Vec<Vec<i32>> = Vec::new();
 
     for atom in atoms.iter_mut() {
         atom.accelerations = [0.; 3];
     }
 
+    let mut linked_list: Vec<Vec<i32>> = Vec::new();
+    for _ in 0..cells_3d as i32 {
+        linked_list.push(Vec::new());
+    }
+
     for i in 0..N as usize {
-        let x = atoms[i].positions[0] / cell_length;
-        let y = atoms[i].positions[1] / cell_length;
-        let z = atoms[i].positions[2] / cell_length;
+        let x = (atoms[i].positions[0] / cell_length) as i32;
+        let y = (atoms[i].positions[1] / cell_length) as i32;
+        let z = (atoms[i].positions[2] / cell_length) as i32;
         // Turn coordinates into a cell an atom belongs to
-        let c = x * cells_2d + y * cells_per_dimension + z;
+        let c = x * cells_2d as i32 + y * cells_per_dimension as i32 + z;
+        //println!("{} {} {} in cell {}", x, y, z, c);
         // Place atom into that cell
         linked_list[c as usize].push(i as i32);
     }
@@ -198,17 +212,13 @@ fn write_positions(atoms: &mut Vec<Atom>, file: &mut File, time: i32) {
 
 fn calc_cell_index(x: i32, y: i32, z:i32) -> i32 {
     let cells_per_dimension = f64::floor(L!() / TARGET_CELL_LENGTH);
-    let cell_length = L!() / cells_per_dimension;
     let cells_2d = cells_per_dimension * cells_per_dimension;
-    let cells_3d = cells_per_dimension * cells_2d;
     x * cells_2d as i32 + y * cells_per_dimension as i32 + z
 }
 
 fn calc_cell_from_index(idx: i32) -> [i32; 3] {
     let cells_per_dimension = f64::floor(L!() / TARGET_CELL_LENGTH);
-    let cell_length = L!() / cells_per_dimension;
     let cells_2d = cells_per_dimension * cells_per_dimension;
-    let cells_3d = cells_per_dimension * cells_2d;
     let mut arr = [0; 3];
     arr[0] = idx / cells_2d as i32;
     let remainder = idx % cells_2d as i32;
@@ -219,9 +229,6 @@ fn calc_cell_from_index(idx: i32) -> [i32; 3] {
 
 fn shift_neighbor(x: i32, y: i32, z: i32) -> [i32; 3] {
     let cells_per_dimension = f64::floor(L!() / TARGET_CELL_LENGTH);
-    let cell_length = L!() / cells_per_dimension;
-    let cells_2d = cells_per_dimension * cells_per_dimension;
-    let cells_3d = cells_per_dimension * cells_2d;
     let mut arr = [0; 3];
     arr[0] = (x + cells_per_dimension as i32) % cells_per_dimension as i32;
     arr[1] = (y + cells_per_dimension as i32) % cells_per_dimension as i32;
