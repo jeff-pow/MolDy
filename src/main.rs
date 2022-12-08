@@ -84,7 +84,7 @@ fn main() {
             }
         }
 
-        let net_potential = calc_forces(&mut atoms);
+        let net_potential = calc_forces(&mut atoms, &cell_interaction_indexes);
 
         let mut total_vel_squared = 0.;
 
@@ -121,6 +121,72 @@ fn main() {
     long_range_potential_corrections *= temp - temp1;
     let pestar = ((avg + long_range_potential_corrections) / N as f64) / EPS_STAR;
     println!("Reduced potential: {}", pestar);
+}
+
+fn calc_forces_on_cell(c: i32, atoms: &mut Vec<Atom>, linked_list: &Vec<Vec<i32>>, cell_interaction_indexes: &Vec<Vec<i32>>) -> f64 {
+    let mut net_potential = 0.;
+    let cell_arr = linked_list[c as usize].to_owned();
+
+    // Scan neighbor cells including currently cell
+    
+    for c1 in cell_interaction_indexes[c as usize].iter() {
+        let neighbor_cell_arr = linked_list[*c1 as usize].to_owned();
+
+        for i in cell_arr.iter() {
+            for j in neighbor_cell_arr.iter() {
+                if i < j || c != *c1 { // Don't double count atoms (if i > j its already been counted)
+                    let mut dist_arr = [0.; 3];
+                    for k in 0..3 {
+                        dist_arr[k] = atoms[*i as usize].positions[k] - atoms[*j as usize].positions[k];
+                        dist_arr[k] -= L!() * f64::round(dist_arr[k] / L!());
+                    }
+                    let r2 = dot(dist_arr[0], dist_arr[1], dist_arr[2]); // Dot of distance vector between the two atoms
+                    if r2 < rCutoffSquared!() {
+                        let s2or2 = SIGMA * SIGMA / r2; // Sigma squared over r squared
+                        let sor6 = s2or2 * s2or2 * s2or2; // Sigma over r to the sixth
+                        let sor12 = sor6 * sor6; // Sigma over r to the twelfth
+                        let force_over_r = 24. * EPS_STAR / r2 * (2. * sor12 - sor6);
+                        net_potential += 4. * EPS_STAR * (sor12 - sor6);
+                        for k in 0..3 {
+                            atoms[*i as usize].accelerations[k] += force_over_r * dist_arr[k] / MASS;
+                            atoms[*j as usize].accelerations[k] -= force_over_r * dist_arr[k] / MASS;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    net_potential
+}
+
+fn calc_forces(atoms: &mut Vec<Atom>, cell_interaction_indexes: &Vec<Vec<i32>>) -> f64 {
+    let mut net_potential = 0.;
+    let cells_per_dimension = f64::floor(L!() / TARGET_CELL_LENGTH);
+    let cell_length = L!() / cells_per_dimension;
+    let cells_2d = cells_per_dimension * cells_per_dimension;
+    let cells_3d = cells_per_dimension * cells_2d;
+    let mut linked_list: Vec<Vec<i32>> = Vec::new();
+
+    for atom in atoms.iter_mut() {
+        atom.accelerations = [0.; 3];
+    }
+
+    for i in 0..N as usize {
+        let x = atoms[i].positions[0] / cell_length;
+        let y = atoms[i].positions[1] / cell_length;
+        let z = atoms[i].positions[2] / cell_length;
+        // Turn coordinates into a cell an atom belongs to
+        let c = x * cells_2d + y * cells_per_dimension + z;
+        // Place atom into that cell
+        linked_list[c as usize].push(i as i32);
+    }
+
+    for c in 0..cells_3d as i32 {
+        net_potential += calc_forces_on_cell(c, atoms, &linked_list, cell_interaction_indexes);
+    }
+
+    return net_potential;
 }
 
 fn write_positions(atoms: &mut Vec<Atom>, file: &mut File, time: i32) {
