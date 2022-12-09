@@ -135,7 +135,7 @@ fn main() {
     println!("Reduced potential: {}", pestar);
 }
 
-fn calc_forces_on_cell(c: i32, atoms: &mut Vec<Atom>, linked_list: &Vec<Vec<i32>>, cell_interaction_indexes: &Vec<Vec<i32>>) -> f64 {
+fn calc_forces_on_cell(c: i32, atoms: &mut [Atom], linked_list: &[Vec<i32>], cell_interaction_indexes: &[Vec<i32>]) -> f64 {
     let mut net_potential = 0.;
     let cell_arr = linked_list[c as usize].to_owned();
 
@@ -172,7 +172,7 @@ fn calc_forces_on_cell(c: i32, atoms: &mut Vec<Atom>, linked_list: &Vec<Vec<i32>
     net_potential
 }
 
-fn calc_forces(atoms: &mut Vec<Atom>, cell_interaction_indexes: &Vec<Vec<i32>>) -> f64 {
+fn calc_forces(atoms: &mut [Atom], cell_interaction_indexes: &[Vec<i32>]) -> f64 {
     let mut net_potential = 0.;
     let cells_per_dimension = f64::floor(L!() / TARGET_CELL_LENGTH);
     let cell_length = L!() / cells_per_dimension;
@@ -188,10 +188,10 @@ fn calc_forces(atoms: &mut Vec<Atom>, cell_interaction_indexes: &Vec<Vec<i32>>) 
         linked_list.push(Vec::new());
     }
 
-    for i in 0..N as usize {
-        let x = (atoms[i].positions[0] / cell_length) as i32;
-        let y = (atoms[i].positions[1] / cell_length) as i32;
-        let z = (atoms[i].positions[2] / cell_length) as i32;
+    for (i, atom) in atoms.iter().enumerate() {
+        let x = (atom.positions[0] / cell_length) as i32;
+        let y = (atom.positions[1] / cell_length) as i32;
+        let z = (atom.positions[2] / cell_length) as i32;
         // Turn coordinates into a cell an atom belongs to
         let c = x * cells_2d as i32 + y * cells_per_dimension as i32 + z;
         // Place atom into that cell
@@ -199,13 +199,13 @@ fn calc_forces(atoms: &mut Vec<Atom>, cell_interaction_indexes: &Vec<Vec<i32>>) 
     }
 
     for c in 0..cells_3d as i32 {
-        net_potential += calc_forces_on_cell(c, atoms, &linked_list, &cell_interaction_indexes);
+        net_potential += calc_forces_on_cell(c, atoms, &linked_list, cell_interaction_indexes);
     }
 
-    return net_potential;
+    net_potential
 }
 
-fn write_positions(atoms: &mut Vec<Atom>, file: &mut File, time: i32) {
+fn write_positions(atoms: &mut [Atom], file: &mut File, time: i32) {
     write!(file, "{}\nTime: {}\n", N, time).expect("File not found");
     for atom in atoms.iter_mut() {
         writeln!(file, "A {} {} {}", atom.positions[0], atom.positions[1], atom.positions[2]).expect("File not found");
@@ -276,7 +276,7 @@ fn calc_cell_interactions() -> Vec<Vec<i32>> {
     cell_interaction_indexes
 }
 
-fn thermostat(atoms: &mut Vec<Atom>) {
+fn thermostat(atoms: &mut [Atom]) {
     let mut instant_temp: f64 = 0.;
     for atom in atoms.iter_mut() {
         instant_temp += MASS * dot(atom.velocities[0], atom.velocities[1], atom.velocities[2]);
@@ -314,5 +314,5 @@ fn face_centered_cell() -> Vec<Atom> {
             }
         }
     }
-    return atoms;
+    atoms
 }

@@ -1,5 +1,5 @@
 [package]
-name = "MolDy"
+name = "mol_dy"
 version = "0.1.0"
 edition = "2021"
 
