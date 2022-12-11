@@ -18,29 +18,12 @@ const EPS_STAR: f64 = EPSILON / KB;
 const RHOSTAR: f64 = 0.6;
 const RHO: f64 = RHOSTAR / (SIGMA * SIGMA * SIGMA);
 const R_CUTOFF: f64 = SIGMA * 2.5;
+const R_CUTOFF_SQUARED: f64 = R_CUTOFF * R_CUTOFF;
 const T_STAR: f64 = 1.24;
 const TARGET_TEMP: f64 = T_STAR * EPS_STAR;
 const MASS: f64 = 39.9 * 10. / NA / KB;
 const TARGET_CELL_LENGTH: f64 = R_CUTOFF;
 
-
-macro_rules! timeStep {
-    () => { 
-        (DT_STAR * f64::sqrt(MASS * SIGMA * SIGMA / EPS_STAR))
-    };
-}
-
-macro_rules! L {
-    () => {
-        (f64::cbrt(N as f64 / RHO))
-    };
-}
-
-macro_rules! rCutoffSquared {
-    () => {
-        (R_CUTOFF * R_CUTOFF)
-    };
-}
 
 struct Atom {
     positions: [f64; 3],
@@ -50,8 +33,9 @@ struct Atom {
 }
 
 fn main() {
-    let cells_per_dimension = f64::floor(L!() / TARGET_CELL_LENGTH);
-    let cell_length = L!() / cells_per_dimension;
+    let sim_length = f64::cbrt(N as f64 / RHO);
+    let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH);
+    let cell_length = sim_length / cells_per_dimension;
     let cells_2d = cells_per_dimension * cells_per_dimension;
     let cells_3d = cells_per_dimension * cells_2d;
     println!("{} cells per dimension", cells_per_dimension);
@@ -77,6 +61,7 @@ fn main() {
 
     let cell_interaction_indexes = calc_cell_interactions();
 
+    let time_step = DT_STAR * f64::sqrt(MASS * SIGMA * SIGMA / EPS_STAR);
     let mut count = 0.05;
     for time in 0..NUM_TIME_STEPS {
         if time as f64 > count * NUM_TIME_STEPS as f64 {
@@ -88,8 +73,8 @@ fn main() {
 
         for atom in atoms.iter_mut() {
             for k in 0..3 {
-                atom.positions[k] += atom.velocities[k] * timeStep!() + 0.5 * atom.accelerations[k] * timeStep!() * timeStep!();
-                atom.positions[k] += -1. * L!() * f64::floor(atom.positions[k] / L!());
+                atom.positions[k] += atom.velocities[k] * time_step + 0.5 * atom.accelerations[k] * time_step * time_step;
+                atom.positions[k] += -1. * sim_length * f64::floor(atom.positions[k] / sim_length);
                 atom.old_accelerations[k] = atom.accelerations[k];
             }
         }
@@ -100,7 +85,7 @@ fn main() {
 
         for atom in atoms.iter_mut() {
             for k in 0..3 {
-                atom.velocities[k] += 0.5 * (atom.accelerations[k] + atom.old_accelerations[k]) * timeStep!();
+                atom.velocities[k] += 0.5 * (atom.accelerations[k] + atom.old_accelerations[k]) * time_step;
                 total_vel_squared += atom.velocities[k] * atom.velocities[k];
             }
         }
@@ -124,7 +109,7 @@ fn main() {
     }
     avg /= pe.len() as f64;
 
-    let sigma_over_l_over_two = SIGMA / (L!() / 2.);
+    let sigma_over_l_over_two = SIGMA / (sim_length / 2.);
     let mut long_range_potential_corrections = (8.0 / 3.0) * PI as f64 * N as f64 * RHOSTAR * EPS_STAR;
     let temp = 1.0 / 3.0 * f64::powf(sigma_over_l_over_two, 9.);
     let temp1 = f64::powf(sigma_over_l_over_two, 3.);
@@ -136,6 +121,7 @@ fn main() {
 }
 
 fn calc_forces_on_cell(c: i32, atoms: &mut [Atom], linked_list: &[Vec<i32>], cell_interaction_indexes: &[Vec<i32>]) -> f64 {
+    let sim_length = f64::cbrt(N as f64 / RHO);
     let mut net_potential = 0.;
     let cell_arr = linked_list[c as usize].to_owned();
 
@@ -150,10 +136,10 @@ fn calc_forces_on_cell(c: i32, atoms: &mut [Atom], linked_list: &[Vec<i32>], cel
                     let mut dist_arr = [0.; 3];
                     for k in 0..3 {
                         dist_arr[k] = atoms[*i as usize].positions[k] - atoms[*j as usize].positions[k];
-                        dist_arr[k] -= L!() * f64::round(dist_arr[k] / L!());
+                        dist_arr[k] -= sim_length * f64::round(dist_arr[k] / sim_length);
                     }
                     let r2 = dot(dist_arr[0], dist_arr[1], dist_arr[2]); // Dot of distance vector between the two atoms
-                    if r2 < rCutoffSquared!() {
+                    if r2 < R_CUTOFF_SQUARED {
                         let s2or2 = SIGMA * SIGMA / r2; // Sigma squared over r squared
                         let sor6 = s2or2 * s2or2 * s2or2; // Sigma over r to the sixth
                         let sor12 = sor6 * sor6; // Sigma over r to the twelfth
@@ -174,8 +160,9 @@ fn calc_forces_on_cell(c: i32, atoms: &mut [Atom], linked_list: &[Vec<i32>], cel
 
 fn calc_forces(atoms: &mut [Atom], cell_interaction_indexes: &[Vec<i32>]) -> f64 {
     let mut net_potential = 0.;
-    let cells_per_dimension = f64::floor(L!() / TARGET_CELL_LENGTH);
-    let cell_length = L!() / cells_per_dimension;
+    let sim_length = f64::cbrt(N as f64 / RHO);
+    let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH);
+    let cell_length = sim_length / cells_per_dimension;
     let cells_2d = cells_per_dimension * cells_per_dimension;
     let cells_3d = cells_per_dimension * cells_2d;
 
@@ -213,13 +200,15 @@ fn write_positions(atoms: &mut [Atom], file: &mut File, time: i32) {
 }
 
 fn calc_cell_index(x: i32, y: i32, z:i32) -> i32 {
-    let cells_per_dimension = f64::floor(L!() / TARGET_CELL_LENGTH);
+    let sim_length = f64::cbrt(N as f64 / RHO);
+    let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH);
     let cells_2d = cells_per_dimension * cells_per_dimension;
     x * cells_2d as i32 + y * cells_per_dimension as i32 + z
 }
 
 fn calc_cell_from_index(idx: i32) -> [i32; 3] {
-    let cells_per_dimension = f64::floor(L!() / TARGET_CELL_LENGTH);
+    let sim_length = f64::cbrt(N as f64 / RHO);
+    let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH);
     let cells_2d = cells_per_dimension * cells_per_dimension;
     let mut arr = [0; 3];
     arr[0] = idx / cells_2d as i32;
@@ -230,7 +219,8 @@ fn calc_cell_from_index(idx: i32) -> [i32; 3] {
 }
 
 fn shift_neighbor(x: i32, y: i32, z: i32) -> [i32; 3] {
-    let cells_per_dimension = f64::floor(L!() / TARGET_CELL_LENGTH);
+    let sim_length = f64::cbrt(N as f64 / RHO);
+    let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH);
     let mut arr = [0; 3];
     arr[0] = (x + cells_per_dimension as i32) % cells_per_dimension as i32;
     arr[1] = (y + cells_per_dimension as i32) % cells_per_dimension as i32;
@@ -244,7 +234,8 @@ fn process_cell(x: i32, y: i32, z: i32) -> i32 {
 }
 
 fn calc_cell_interactions() -> Vec<Vec<i32>> {
-    let cells_per_dimension = f64::floor(L!() / TARGET_CELL_LENGTH);
+    let sim_length = f64::cbrt(N as f64 / RHO);
+    let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH);
     let cells_2d = cells_per_dimension * cells_per_dimension;
     let cells_3d = cells_per_dimension * cells_2d;
 
@@ -295,7 +286,8 @@ fn dot(x: f64, y: f64, z: f64) -> f64 { x * x + y * y + z * z }
 
 fn face_centered_cell() -> Vec<Atom> {
     let n: i32 = f64::cbrt(N as f64 / 4.) as i32;
-    let dr: f64 = L!() / n as f64;
+    let sim_length = f64::cbrt(N as f64 / RHO);
+    let dr: f64 = sim_length / n as f64;
     let dro2: f64 = dr / 2.0;
 
     let mut atoms: Vec<Atom> = Vec::new();
