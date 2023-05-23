@@ -15,6 +15,7 @@ const NUM_TIME_STEPS: i32 = 10000;
 const DT_STAR: f64 = 0.001;
 
 // Formula to find # atoms is x^3 * 4
+// 13500 is a known problem I have no idea why...
 const N: i32 = 4000;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
