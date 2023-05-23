@@ -1,7 +1,8 @@
 #![warn(non_snake_case)]
 use std::f32::consts::PI;
 use std::fs::File;
-use std::io::Write;
+use std::io::{Write, BufWriter};
+use std::time::Instant;
 use rand::Rng;
 
 const KB: f64 = 1.38e-23;
@@ -42,7 +43,7 @@ fn main() {
     println!("{} atoms", N);
     println!("{} cells overall", cells_3d);
     println!("{} cell length", cell_length);
-    let mut file = File::create("out.xyz").expect("File not created");
+    let mut f = BufWriter::new(File::create("out.xyz").unwrap());
 
     let mut ke: Vec<f64> = Vec::new();
     let mut pe: Vec<f64> = Vec::new();
@@ -59,7 +60,10 @@ fn main() {
     
     thermostat(&mut atoms);
 
+    let start = Instant::now();
     let cell_interaction_indexes = calc_cell_interactions();
+    let duration = start.elapsed();
+    // println!("Indexes elapsed: {:?}", duration);
 
     let time_step = DT_STAR * f64::sqrt(MASS * SIGMA * SIGMA / EPS_STAR);
     let mut count = 0.05;
@@ -69,7 +73,10 @@ fn main() {
             count += 0.05;
         }
 
-        write_positions(&mut atoms, &mut file, time);
+        let start = Instant::now();
+        write_positions(&mut atoms, &mut f, time);
+        let duration = start.elapsed();
+        // println!("Writing elapsed: {:?}", duration);
 
         for atom in atoms.iter_mut() {
             for k in 0..3 {
@@ -79,7 +86,11 @@ fn main() {
             }
         }
 
+        let start = Instant::now();
         let net_potential = calc_forces(&mut atoms, &cell_interaction_indexes);
+        let duration = start.elapsed();
+        // println!("Time elapsed: {:?}", duration);
+        
 
         let mut total_vel_squared = 0.;
 
@@ -192,7 +203,7 @@ fn calc_forces(atoms: &mut [Atom], cell_interaction_indexes: &[Vec<i32>]) -> f64
     net_potential
 }
 
-fn write_positions(atoms: &mut [Atom], file: &mut File, time: i32) {
+fn write_positions(atoms: &mut [Atom], file: &mut BufWriter<File>, time: i32) {
     write!(file, "{}\nTime: {}\n", N, time).expect("File not found");
     for atom in atoms.iter_mut() {
         writeln!(file, "A {} {} {}", atom.positions[0], atom.positions[1], atom.positions[2]).expect("File not found");

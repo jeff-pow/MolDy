@@ -61,8 +61,8 @@ std::vector<Atom> faceCenteredCell();
 std::vector<Atom> simpleCubicCell();
 void radialDistribution();
 
-BS::thread_pool pool(std::thread::hardware_concurrency() - 1);
-//BS::thread_pool pool(1);
+//BS::thread_pool pool(std::thread::hardware_concurrency() - 1);
+BS::thread_pool pool(1);
 std::array<std::mutex, N> mutexes;
 
 const double targetCellLength = rCutoff; // Not worth calculating forces past this distance, negligible
