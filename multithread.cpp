@@ -61,8 +61,8 @@ std::vector<Atom> faceCenteredCell();
 std::vector<Atom> simpleCubicCell();
 void radialDistribution();
 
-//BS::thread_pool pool(std::thread::hardware_concurrency() - 1);
-BS::thread_pool pool(1);
+BS::thread_pool pool(std::thread::hardware_concurrency());
+//BS::thread_pool pool(1);
 std::array<std::mutex, N> mutexes;
 
 const double targetCellLength = rCutoff; // Not worth calculating forces past this distance, negligible
@@ -70,8 +70,8 @@ const int numCellsPerDirection = std::floor(L / targetCellLength); // Number of 
 const double cellLength = L / numCellsPerDirection; // Side length of each cell
 const int numCellsYZ = numCellsPerDirection * numCellsPerDirection; // Number of cells in one plane
 const int numCellsXYZ = numCellsYZ * numCellsPerDirection; // Number of cells in the simulation
-std::array<int, N> pointerArr; // Array pointing to the next lowest atom in the cell
 std::vector<int> header(numCellsXYZ, -1); // Array pointing at the highest numbered atom in each cell
+std::array<int, N> pointerArr; // Array pointing to the next lowest atom in the cell
 
 
 void writePositions(std::vector<Atom> &atomList, std::ofstream &positionFile, int i, std::ofstream &debug) {

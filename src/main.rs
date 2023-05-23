@@ -9,7 +9,7 @@ use std::io::{BufWriter, Write};
 const KB: f64 = 1.38e-23;
 const NA: f64 = 6.022e23;
 
-const NUM_TIME_STEPS: i32 = 10000;
+const NUM_TIME_STEPS: i32 = 500;
 const DT_STAR: f64 = 0.001;
 
 const N: i32 = 500;
@@ -36,7 +36,7 @@ fn main() {
     println!("{} atoms", N);
     println!("{} cells overall", cells_3d);
     println!("{} cell length", cell_length);
-    let mut f = BufWriter::new(File::create("out.xyz").unwrap());
+    let mut f = BufWriter::new(File::create("rusty.xyz").unwrap());
 
     let mut ke: Vec<f64> = Vec::new();
     let mut pe: Vec<f64> = Vec::new();
@@ -65,24 +65,23 @@ fn main() {
         write_positions(&positions, &mut f, time);
 
         for (idx, pos) in positions.iter_mut().enumerate() {
-            (0..3).for_each(|k| {
-                pos[k] += velocities[idx][k] * time_step
-                    + 0.5 * accelerations[idx][k] * time_step * time_step;
-                pos[k] += -1. * sim_length * f64::floor(pos[k] / sim_length);
-            });
+            for i in 0..3 {
+                pos[i] += velocities[idx][i] * time_step
+                    + 0.5 * accelerations[idx][i] * time_step * time_step;
+                pos[i] += -sim_length * f64::floor(pos[i] / sim_length);
+            }
         }
         old_accelerations = accelerations;
 
         accelerations = [[0.0; 3]; N as usize];
         let net_potential = calc_forces(&positions, &mut accelerations);
 
-        let mut total_vel_squared = 0.;
         for (idx, vels) in velocities.iter_mut().enumerate() {
             for k in 0..3 {
                 vels[k] += 0.5 * (accelerations[idx][k] + old_accelerations[idx][k]) * time_step;
-                total_vel_squared += vels[k] * vels[k];
             }
         }
+        let total_vel_squared: f64 = velocities.iter().flatten().map(|&x| x * x).sum();
 
         if time < NUM_TIME_STEPS / 2 && time % 5 == 0 {
             thermostat(&mut velocities);
@@ -96,25 +95,27 @@ fn main() {
             total_e.push(net_ke + net_potential);
         }
     }
-    let mut avg = 0.;
-    for i in &pe {
-        avg += i;
-    }
-    avg /= pe.len() as f64;
+    let avg_pe = pe.iter().sum::<f64>() / pe.len() as f64;
+    dbg!(ke);
+    dbg!(pe);
+    dbg!(&total_e);
 
     let sigma_over_l_over_two = SIGMA / (sim_length / 2.);
-    let mut long_range_potential_corrections = (8.0 / 3.0) * PI as f64 * N as f64 * RHOSTAR * EPS_STAR;
+    let mut long_range_potential_corrections =
+        (8.0 / 3.0) * PI as f64 * N as f64 * RHOSTAR * EPS_STAR;
     let temp = 1.0 / 3.0 * f64::powf(sigma_over_l_over_two, 9.);
     let temp1 = f64::powf(sigma_over_l_over_two, 3.);
     long_range_potential_corrections *= temp - temp1;
-    let pestar = ((avg + long_range_potential_corrections) / N as f64) / EPS_STAR;
-    println!("Avg PE: {avg}");
+    let pestar = ((avg_pe + long_range_potential_corrections) / N as f64) / EPS_STAR;
+    println!("Avg PE: {avg_pe}");
     println!("Average energy: {}", total_e[total_e.len() - 1]);
     println!("Reduced potential: {}", pestar);
-
 }
 
-fn calc_forces(positions: &[[f64; 3]], accelerations: &mut [[f64; 3]; N as usize]) -> f64 {
+fn calc_forces(
+    positions: &[[f64; 3]; N as usize],
+    accelerations: &mut [[f64; 3]; N as usize],
+) -> f64 {
     let mut net_potential = 0.0;
     let sim_length = f64::cbrt(N as f64 / RHO);
     let cells_per_dimension = (f64::floor(sim_length / TARGET_CELL_LENGTH)) as i32;
@@ -147,53 +148,55 @@ fn calc_forces(positions: &[[f64; 3]], accelerations: &mut [[f64; 3]; N as usize
 fn calc_forces_on_cell(
     cell_idx: i32,
     accel: &mut [[f64; 3]; N as usize],
-    pos: &[[f64; 3]],
+    pos: &[[f64; 3]; N as usize],
     header: &[i32],
-    cell_list: &[i32],
+    cell_list: &[i32; N as usize],
 ) -> f64 {
     let mut potential = 0.0;
     let sim_length = f64::cbrt(N as f64 / RHO);
     let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH);
     let cells_2d = cells_per_dimension * cells_per_dimension;
-    let x = cell_idx / cells_2d as i32;
+    let cell_x = cell_idx / cells_2d as i32;
     let remainder = cell_idx % cells_2d as i32;
-    let y = remainder / cells_per_dimension as i32;
-    let z = remainder % cells_per_dimension as i32;
+    let cell_y = remainder / cells_per_dimension as i32;
+    let cell_z = remainder % cells_per_dimension as i32;
 
-    for i in x - 1..x + 2 {
-        for j in y - 1..y + 2 {
-            for k in z - 1..z + 2 {
-
-                let x = (i + cells_per_dimension as i32) % cells_per_dimension as i32;
-                let y = (j + cells_per_dimension as i32) % cells_per_dimension as i32;
-                let z = (k + cells_per_dimension as i32) % cells_per_dimension as i32;
-                let neighbor_idx = x * cells_2d as i32 + y * cells_per_dimension as i32 + z;
-                let mut a = header[cell_idx as usize];
-                while a > -1 {
-                    let mut b = header[neighbor_idx as usize];
-                    while b > -1 {
-                        if a < b {
+    for one in cell_x - 1..cell_x + 2 {
+        for two in cell_y - 1..cell_y + 2 {
+            for three in cell_z - 1..cell_z + 2 {
+                let shifted_x = (one + cells_per_dimension as i32) % cells_per_dimension as i32;
+                let shifted_y = (two + cells_per_dimension as i32) % cells_per_dimension as i32;
+                let shifted_z = (three + cells_per_dimension as i32) % cells_per_dimension as i32;
+                let neighbor_idx = shifted_x * cells_2d as i32
+                    + shifted_y * cells_per_dimension as i32
+                    + shifted_z;
+                let mut i = header[cell_idx as usize];
+                while i > -1 {
+                    let mut j = header[neighbor_idx as usize];
+                    while j > -1 {
+                        if i < j {
                             let mut dist_arr = [0.; 3];
-                            for ii in 0..3 {
-                                dist_arr[ii] = pos[a as usize][ii] - pos[b as usize][ii];
-                                dist_arr[ii] -= sim_length * f64::round(dist_arr[ii] / sim_length);
+                            for k in 0..3 {
+                                dist_arr[k] = pos[i as usize][k] - pos[j as usize][k];
+                                dist_arr[k] -= sim_length * f64::round(dist_arr[k] / sim_length);
                             }
-                            let r2 = dot(dist_arr[0], dist_arr[1], dist_arr[2]); // Dot of distance vector between the two atoms
+                            let r2 = dot(&dist_arr);
+                            assert_ne!(r2, 0.);
                             if r2 < R_CUTOFF_SQUARED {
                                 let s2or2 = SIGMA * SIGMA / r2; // Sigma squared over r squared
                                 let sor6 = s2or2 * s2or2 * s2or2; // Sigma over r to the sixth
                                 let sor12 = sor6 * sor6; // Sigma over r to the twelfth
                                 let force_over_r = 24. * EPS_STAR / r2 * (2. * sor12 - sor6);
                                 potential += 4. * EPS_STAR * (sor12 - sor6);
-                                for ii in 0..3 {
-                                    accel[a as usize][ii] += force_over_r * dist_arr[ii] / MASS;
-                                    accel[b as usize][ii] -= force_over_r * dist_arr[ii] / MASS;
+                                for k in 0..3 {
+                                    accel[i as usize][k] += force_over_r * dist_arr[k] / MASS;
+                                    accel[j as usize][k] -= force_over_r * dist_arr[k] / MASS;
                                 }
                             }
                         }
-                        b = cell_list[b as usize];
+                        j = cell_list[j as usize];
                     }
-                    a = cell_list[a as usize];
+                    i = cell_list[i as usize];
                 }
             }
         }
@@ -204,12 +207,12 @@ fn calc_forces_on_cell(
 fn write_positions(pos: &[[f64; 3]], file: &mut BufWriter<File>, time: i32) {
     write!(file, "{}\nTime: {}\n", N, time).expect("File not found");
     for atom in pos.iter() {
-        writeln!(file, "A {} {} {}", atom[0], atom[1], atom[2]).expect("File not found");
+        writeln!(file, "A {:.5} {:.5} {:.5}", atom[0], atom[1], atom[2]).expect("File not found");
     }
 }
 
 fn thermostat(velocities: &mut [[f64; 3]; N as usize]) {
-    let mut instant_temp: f64 = velocities.iter().map(|&x| dot(x[0], x[1], x[2])).sum();
+    let mut instant_temp: f64 = velocities.iter().map(|&x| dot(&x)).sum();
     instant_temp /= (3 * N - 3) as f64;
     let temp_scalar = f64::sqrt(TARGET_TEMP / instant_temp);
     for vel in velocities.iter_mut().flatten() {
@@ -218,25 +221,30 @@ fn thermostat(velocities: &mut [[f64; 3]; N as usize]) {
 }
 
 #[inline]
-fn dot(x: f64, y: f64, z: f64) -> f64 {
-    x * x + y * y + z * z
+fn dot(arr: &[f64; 3]) -> f64 {
+    arr.iter().map(|&x| x * x).sum()
 }
 
-fn face_centered_cell() -> Vec<[f64; 3]> {
+fn face_centered_cell() -> [[f64; 3]; N as usize] {
     let n: i32 = f64::cbrt(N as f64 / 4.) as i32;
     let sim_length = f64::cbrt(N as f64 / RHO);
     let dr: f64 = sim_length / n as f64;
     let dro2: f64 = dr / 2.0;
 
-    let mut positions: Vec<[f64; 3]> = Vec::new();
+    let mut count = 0;
+    let mut positions: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
 
     for i in 0..n {
         for j in 0..n {
             for k in 0..n {
-                positions.push([i as f64 * dr, j as f64 * dr, k as f64 * dr]);
-                positions.push([i as f64 * dr + dro2, j as f64 * dr + dro2, k as f64 * dr]);
-                positions.push([i as f64 * dr + dro2, j as f64 * dr, k as f64 * dr + dro2]);
-                positions.push([i as f64 * dr, j as f64 * dr + dro2, k as f64 * dr + dro2]);
+                positions[count] = [i as f64 * dr, j as f64 * dr, k as f64 * dr];
+                count += 1;
+                positions[count] = [i as f64 * dr + dro2, j as f64 * dr + dro2, k as f64 * dr];
+                count += 1;
+                positions[count] = [i as f64 * dr + dro2, j as f64 * dr, k as f64 * dr + dro2];
+                count += 1;
+                positions[count] = [i as f64 * dr, j as f64 * dr + dro2, k as f64 * dr + dro2];
+                count += 1;
             }
         }
     }

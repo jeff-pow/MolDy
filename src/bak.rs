@@ -1,9 +1,9 @@
 #![warn(non_snake_case)]
+use rand::Rng;
 use std::f32::consts::PI;
 use std::fs::File;
-use std::io::{Write, BufWriter};
+use std::io::{BufWriter, Write};
 use std::time::Instant;
-use rand::Rng;
 
 const KB: f64 = 1.38e-23;
 const NA: f64 = 6.022e23;
@@ -24,7 +24,6 @@ const T_STAR: f64 = 1.24;
 const TARGET_TEMP: f64 = T_STAR * EPS_STAR;
 const MASS: f64 = 39.9 * 10. / NA / KB;
 const TARGET_CELL_LENGTH: f64 = R_CUTOFF;
-
 
 struct Atom {
     positions: [f64; 3],
@@ -47,7 +46,7 @@ fn main() {
 
     let mut ke: Vec<f64> = Vec::new();
     let mut pe: Vec<f64> = Vec::new();
-    let mut total_e: Vec<f64>  = Vec::new();
+    let mut total_e: Vec<f64> = Vec::new();
 
     let mut atoms = face_centered_cell();
 
@@ -55,15 +54,12 @@ fn main() {
     for atom in atoms.iter_mut() {
         for j in 0..3 {
             atom.velocities[j] = rng.gen_range(-1.0..1.0);
-        }    
+        }
     }
-    
+
     thermostat(&mut atoms);
 
-    let start = Instant::now();
     let cell_interaction_indexes = calc_cell_interactions();
-    let duration = start.elapsed();
-    // println!("Indexes elapsed: {:?}", duration);
 
     let time_step = DT_STAR * f64::sqrt(MASS * SIGMA * SIGMA / EPS_STAR);
     let mut count = 0.05;
@@ -80,7 +76,8 @@ fn main() {
 
         for atom in atoms.iter_mut() {
             for k in 0..3 {
-                atom.positions[k] += atom.velocities[k] * time_step + 0.5 * atom.accelerations[k] * time_step * time_step;
+                atom.positions[k] += atom.velocities[k] * time_step
+                    + 0.5 * atom.accelerations[k] * time_step * time_step;
                 atom.positions[k] += -1. * sim_length * f64::floor(atom.positions[k] / sim_length);
                 atom.old_accelerations[k] = atom.accelerations[k];
             }
@@ -90,13 +87,13 @@ fn main() {
         let net_potential = calc_forces(&mut atoms, &cell_interaction_indexes);
         let duration = start.elapsed();
         // println!("Time elapsed: {:?}", duration);
-        
 
         let mut total_vel_squared = 0.;
 
         for atom in atoms.iter_mut() {
             for k in 0..3 {
-                atom.velocities[k] += 0.5 * (atom.accelerations[k] + atom.old_accelerations[k]) * time_step;
+                atom.velocities[k] +=
+                    0.5 * (atom.accelerations[k] + atom.old_accelerations[k]) * time_step;
                 total_vel_squared += atom.velocities[k] * atom.velocities[k];
             }
         }
@@ -121,7 +118,8 @@ fn main() {
     avg /= pe.len() as f64;
 
     let sigma_over_l_over_two = SIGMA / (sim_length / 2.);
-    let mut long_range_potential_corrections = (8.0 / 3.0) * PI as f64 * N as f64 * RHOSTAR * EPS_STAR;
+    let mut long_range_potential_corrections =
+        (8.0 / 3.0) * PI as f64 * N as f64 * RHOSTAR * EPS_STAR;
     let temp = 1.0 / 3.0 * f64::powf(sigma_over_l_over_two, 9.);
     let temp1 = f64::powf(sigma_over_l_over_two, 3.);
     long_range_potential_corrections *= temp - temp1;
@@ -131,22 +129,29 @@ fn main() {
     println!("Reduced potential: {}", pestar);
 }
 
-fn calc_forces_on_cell(c: i32, atoms: &mut [Atom], linked_list: &[Vec<i32>], cell_interaction_indexes: &[Vec<i32>]) -> f64 {
+fn calc_forces_on_cell(
+    c: i32,
+    atoms: &mut [Atom],
+    linked_list: &[Vec<i32>],
+    cell_interaction_indexes: &[Vec<i32>],
+) -> f64 {
     let sim_length = f64::cbrt(N as f64 / RHO);
     let mut net_potential = 0.;
     let cell_arr = linked_list[c as usize].to_owned();
 
     // Scan neighbor cells including currently cell
-    
+
     for c1 in cell_interaction_indexes[c as usize].iter() {
         let neighbor_cell_arr = linked_list[*c1 as usize].to_owned();
 
         for i in cell_arr.iter() {
             for j in neighbor_cell_arr.iter() {
-                if i < j || c != *c1 { // Don't double count atoms (if i > j its already been counted)
+                if i < j || c != *c1 {
+                    // Don't double count atoms (if i > j its already been counted)
                     let mut dist_arr = [0.; 3];
                     for k in 0..3 {
-                        dist_arr[k] = atoms[*i as usize].positions[k] - atoms[*j as usize].positions[k];
+                        dist_arr[k] =
+                            atoms[*i as usize].positions[k] - atoms[*j as usize].positions[k];
                         dist_arr[k] -= sim_length * f64::round(dist_arr[k] / sim_length);
                     }
                     let r2 = dot(dist_arr[0], dist_arr[1], dist_arr[2]); // Dot of distance vector between the two atoms
@@ -157,8 +162,10 @@ fn calc_forces_on_cell(c: i32, atoms: &mut [Atom], linked_list: &[Vec<i32>], cel
                         let force_over_r = 24. * EPS_STAR / r2 * (2. * sor12 - sor6);
                         net_potential += 4. * EPS_STAR * (sor12 - sor6);
                         for k in 0..3 {
-                            atoms[*i as usize].accelerations[k] += force_over_r * dist_arr[k] / MASS;
-                            atoms[*j as usize].accelerations[k] -= force_over_r * dist_arr[k] / MASS;
+                            atoms[*i as usize].accelerations[k] +=
+                                force_over_r * dist_arr[k] / MASS;
+                            atoms[*j as usize].accelerations[k] -=
+                                force_over_r * dist_arr[k] / MASS;
                         }
                     }
                 }
@@ -206,11 +213,16 @@ fn calc_forces(atoms: &mut [Atom], cell_interaction_indexes: &[Vec<i32>]) -> f64
 fn write_positions(atoms: &mut [Atom], file: &mut BufWriter<File>, time: i32) {
     write!(file, "{}\nTime: {}\n", N, time).expect("File not found");
     for atom in atoms.iter_mut() {
-        writeln!(file, "A {} {} {}", atom.positions[0], atom.positions[1], atom.positions[2]).expect("File not found");
+        writeln!(
+            file,
+            "A {} {} {}",
+            atom.positions[0], atom.positions[1], atom.positions[2]
+        )
+        .expect("File not found");
     }
 }
 
-fn calc_cell_index(x: i32, y: i32, z:i32) -> i32 {
+fn calc_cell_index(x: i32, y: i32, z: i32) -> i32 {
     let sim_length = f64::cbrt(N as f64 / RHO);
     let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH);
     let cells_2d = cells_per_dimension * cells_per_dimension;
@@ -293,7 +305,9 @@ fn thermostat(atoms: &mut [Atom]) {
 }
 
 #[inline]
-fn dot(x: f64, y: f64, z: f64) -> f64 { x * x + y * y + z * z }
+fn dot(x: f64, y: f64, z: f64) -> f64 {
+    x * x + y * y + z * z
+}
 
 fn face_centered_cell() -> Vec<Atom> {
     let n: i32 = f64::cbrt(N as f64 / 4.) as i32;
@@ -306,14 +320,30 @@ fn face_centered_cell() -> Vec<Atom> {
     for i in 0..n {
         for j in 0..n {
             for k in 0..n {
-                atoms.push(Atom{positions:[i as f64 * dr, j as f64 * dr, k as f64 * dr], velocities: [0., 0., 0.],
-                    accelerations: [0., 0., 0.], old_accelerations: [0., 0., 0.]});
-                atoms.push(Atom{positions:[i as f64 * dr + dro2, j as f64 * dr + dro2, k as f64 * dr], velocities: [0., 0., 0.],
-                    accelerations: [0., 0., 0.], old_accelerations: [0., 0., 0.]});
-                atoms.push(Atom{positions:[i as f64 * dr + dro2, j as f64 * dr, k as f64 * dr + dro2], velocities: [0., 0., 0.],
-                    accelerations: [0., 0., 0.], old_accelerations: [0., 0., 0.]});
-                atoms.push(Atom{positions:[i as f64 * dr, j as f64 * dr + dro2, k as f64 * dr + dro2], velocities: [0., 0., 0.],
-                    accelerations: [0., 0., 0.], old_accelerations: [0., 0., 0.]});
+                atoms.push(Atom {
+                    positions: [i as f64 * dr, j as f64 * dr, k as f64 * dr],
+                    velocities: [0., 0., 0.],
+                    accelerations: [0., 0., 0.],
+                    old_accelerations: [0., 0., 0.],
+                });
+                atoms.push(Atom {
+                    positions: [i as f64 * dr + dro2, j as f64 * dr + dro2, k as f64 * dr],
+                    velocities: [0., 0., 0.],
+                    accelerations: [0., 0., 0.],
+                    old_accelerations: [0., 0., 0.],
+                });
+                atoms.push(Atom {
+                    positions: [i as f64 * dr + dro2, j as f64 * dr, k as f64 * dr + dro2],
+                    velocities: [0., 0., 0.],
+                    accelerations: [0., 0., 0.],
+                    old_accelerations: [0., 0., 0.],
+                });
+                atoms.push(Atom {
+                    positions: [i as f64 * dr, j as f64 * dr + dro2, k as f64 * dr + dro2],
+                    velocities: [0., 0., 0.],
+                    accelerations: [0., 0., 0.],
+                    old_accelerations: [0., 0., 0.],
+                });
             }
         }
     }
