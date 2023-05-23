@@ -3,9 +3,8 @@ use rand::Rng;
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::{BufWriter, Write};
-use std::time::Instant;
 
-mod bak;
+//mod bak;
 
 const KB: f64 = 1.38e-23;
 const NA: f64 = 6.022e23;
@@ -44,7 +43,7 @@ fn main() {
     let mut total_e: Vec<f64> = Vec::new();
 
     let mut accelerations: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
-    let mut old_accelerations: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
+    let mut old_accelerations: [[f64; 3]; N as usize];
     let mut positions = face_centered_cell();
     let mut velocities: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
     let mut rng = rand::thread_rng();
@@ -70,9 +69,9 @@ fn main() {
                 pos[k] += velocities[idx][k] * time_step
                     + 0.5 * accelerations[idx][k] * time_step * time_step;
                 pos[k] += -1. * sim_length * f64::floor(pos[k] / sim_length);
-                old_accelerations[idx][k] = accelerations[idx][k];
             });
         }
+        old_accelerations = accelerations;
 
         accelerations = [[0.0; 3]; N as usize];
         let net_potential = calc_forces(&positions, &mut accelerations);
@@ -97,7 +96,7 @@ fn main() {
             total_e.push(net_ke + net_potential);
         }
     }
-        let mut avg = 0.;
+    let mut avg = 0.;
     for i in &pe {
         avg += i;
     }
@@ -118,27 +117,27 @@ fn main() {
 fn calc_forces(positions: &[[f64; 3]], accelerations: &mut [[f64; 3]; N as usize]) -> f64 {
     let mut net_potential = 0.0;
     let sim_length = f64::cbrt(N as f64 / RHO);
-    let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH);
-    let cell_length = sim_length / cells_per_dimension;
+    let cells_per_dimension = (f64::floor(sim_length / TARGET_CELL_LENGTH)) as i32;
     let cells_2d = cells_per_dimension * cells_per_dimension;
     let cells_3d = cells_per_dimension * cells_2d;
+    let cell_length = sim_length / cells_per_dimension as f64;
 
     let mut header = vec![-1; cells_3d as usize];
     let mut cell_list = [0; N as usize];
 
     for atom_idx in 0..N {
-        let x = positions[atom_idx as usize][0] / cell_length;
-        let y = positions[atom_idx as usize][1] / cell_length;
-        let z = positions[atom_idx as usize][2] / cell_length;
+        let x = (positions[atom_idx as usize][0] / cell_length) as i32;
+        let y = (positions[atom_idx as usize][1] / cell_length) as i32;
+        let z = (positions[atom_idx as usize][2] / cell_length) as i32;
         // Turn coordinates of cell into a cell index for the header array
-        let c = (x * cells_2d + y * cells_per_dimension + z) as i32;
+        let c = x * cells_2d + y * cells_per_dimension + z;
         // Link current atom to previous occupant
         cell_list[atom_idx as usize] = header[c as usize];
         // Current atom is the highest in its cell, so it goes in the header
         header[c as usize] = atom_idx;
     }
 
-    for c in 0..cells_3d as i32 {
+    for c in 0..cells_3d {
         net_potential += calc_forces_on_cell(c, accelerations, positions, &header, &cell_list);
     }
 
