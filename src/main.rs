@@ -14,7 +14,7 @@ const NA: f64 = 6.022e23;
 const NUM_TIME_STEPS: i32 = 10000;
 const DT_STAR: f64 = 0.001;
 
-const N: i32 = 13500;
+const N: i32 = 4000;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
 const EPS_STAR: f64 = EPSILON / KB;
@@ -45,25 +45,18 @@ fn main() {
     let mut pe: Vec<f64> = Vec::new();
     let mut total_e: Vec<f64> = Vec::new();
 
-    let mut accelerations: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
-    let mut old_accelerations: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
-    let mut positions = face_centered_cell();
-    let mut velocities: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
+    let mut accel: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
+    let mut old_accel: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
+    let mut pos = face_centered_cell();
+    let mut vel: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
     let mut rng: StdRng = rand::SeedableRng::from_seed([3; 32]);
 
-    for element in velocities.iter_mut().flatten() {
+    for element in vel.iter_mut().flatten() {
         *element = rng.gen_range(-1.0..1.0);
     }
 
-    write_dbg(
-        &positions,
-        &velocities,
-        &accelerations,
-        &old_accelerations,
-        &mut dbg_file,
-        0,
-    );
-    thermostat(&mut velocities);
+    write_dbg(&pos, &vel, &accel, &old_accel, &mut dbg_file, 0);
+    thermostat(&mut vel);
 
     let time_step = DT_STAR * f64::sqrt(MASS * SIGMA * SIGMA / EPS_STAR);
     let mut count = 0.05;
@@ -73,7 +66,7 @@ fn main() {
             count += 0.05;
         }
 
-        write_positions(&positions, &mut f, time);
+        write_positions(&pos, &mut f, time);
         // write_dbg(
         //     &positions,
         //     &velocities,
@@ -83,32 +76,29 @@ fn main() {
         //     time,
         // );
 
-        positions
-            .iter_mut()
+        pos.iter_mut()
             .flatten()
-            .zip(velocities.iter().flatten())
-            .zip(accelerations.iter().flatten())
+            .zip(vel.iter().flatten())
+            .zip(accel.iter().flatten())
             .for_each(|((p, v), a)| *p += v * time_step + 0.5 * a * time_step * time_step);
-        positions
-            .iter_mut()
+        pos.iter_mut()
             .flatten()
             .for_each(|p| *p += -sim_length * f64::floor(*p / sim_length));
-        old_accelerations = accelerations;
+        old_accel = accel;
 
-        accelerations = [[0.0; 3]; N as usize];
-        let net_potential = calc_forces(&positions, &mut accelerations);
+        accel = [[0.0; 3]; N as usize];
+        let net_potential = calc_forces(&pos, &mut accel);
 
-        velocities
-            .iter_mut()
+        vel.iter_mut()
             .flatten()
-            .zip(accelerations.iter().flatten())
-            .zip(old_accelerations.iter().flatten())
+            .zip(accel.iter().flatten())
+            .zip(old_accel.iter().flatten())
             .for_each(|((v, a), oa)| *v += 0.5 * (a + oa) * time_step);
 
-        let total_vel_squared: f64 = velocities.iter().flatten().map(|&x| x * x).sum();
+        let total_vel_squared: f64 = vel.iter().flatten().map(|&x| x * x).sum();
 
         if time < NUM_TIME_STEPS / 2 && time % 5 == 0 {
-            thermostat(&mut velocities);
+            thermostat(&mut vel);
         }
 
         if time > NUM_TIME_STEPS / 2 {
@@ -212,10 +202,18 @@ fn calc_forces_on_cell(
                         let sor12 = sor6 * sor6;
                         let force_over_r = 24. * EPS_STAR / r2 * (2. * sor12 - sor6);
                         potential += 4. * EPS_STAR * (sor12 - sor6);
-                        for k in 0..3 {
-                            accel[i as usize][k] += force_over_r * dist_arr[k] / MASS;
-                            accel[j as usize][k] -= force_over_r * dist_arr[k] / MASS;
-                        }
+                        // for k in 0..3 {
+                        //     accel[i as usize][k] += force_over_r * dist_arr[k] / MASS;
+                        //     accel[j as usize][k] -= force_over_r * dist_arr[k] / MASS;
+                        // }
+                        accel[i as usize]
+                            .iter_mut()
+                            .zip(dist_arr.iter())
+                            .for_each(|(a, d)| *a += force_over_r * d / MASS);
+                        accel[j as usize]
+                            .iter_mut()
+                            .zip(dist_arr.iter())
+                            .for_each(|(a, d)| *a -= force_over_r * d / MASS);
                     }
                 }
                 j = atom_cell_list[j as usize];
