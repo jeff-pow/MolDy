@@ -76,16 +76,9 @@ std::vector<int> header(numCellsXYZ, -1); // Array pointing at the highest numbe
 
 void writePositions(std::vector<Atom> &atomList, std::ofstream &positionFile, int i, std::ofstream &debug) {
     positionFile << N << "\nTime: " << i << "\n";
-    //debug << "Time: " << i << "\n";
     for (int j = 0; j < N; ++j) { // Write positions to xyz file
         positionFile << "A " << atomList[j].positions[0] << " " << atomList[j].positions[1] << " " << atomList[j].positions[2] << "\n";
-        //debug << "Atom number: " << j << "\n";
-        //debug << "Positions: " << atomList[j].positions[0] << " " << atomList[j].positions[1] << " " << atomList[j].positions[2] << "\n";
-        //debug << "Velocities: " << atomList[j].velocities[0] << " " << atomList[j].velocities[1]  << " " << atomList[j].velocities[2] << "\n";
-        //debug << "Accelerations: " << atomList[j].accelerations[0] << " " << atomList[j].accelerations[1]  << " " << atomList[j].accelerations[2] << "\n";
-        //debug << "- \n";
     }
-    //debug << "------------------------------------------------- \n";
 }
 
 int main() {
@@ -155,11 +148,6 @@ int main() {
             KE.push_back(netKE);
             PE.push_back(netPotential);
             netE.push_back(netPotential + netKE);
-            //energyFile << "Time: " << i << "\n";
-            //energyFile << "KE: " << netKE << "\n";
-            //energyFile << "PE: " << netPotential << "\n";
-            //energyFile << "Total energy: " << netPotential + netKE << "\n";
-            //energyFile << "------------------------------------------ \n";
         }
     }
 
