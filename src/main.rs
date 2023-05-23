@@ -14,6 +14,7 @@ const NA: f64 = 6.022e23;
 const NUM_TIME_STEPS: i32 = 10000;
 const DT_STAR: f64 = 0.001;
 
+// Formula to find # atoms is x^3 * 4
 const N: i32 = 4000;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
@@ -39,7 +40,7 @@ fn main() {
     println!("{} cells overall", cells_3d);
     println!("{} cell length", cell_length);
     let mut f = BufWriter::new(File::create("rusty.xyz").unwrap());
-    let mut dbg_file = BufWriter::new(File::create("dbg.xyz").unwrap());
+    let mut dbg_file = BufWriter::new(File::create("dbg.txt").unwrap());
 
     let mut ke: Vec<f64> = Vec::new();
     let mut pe: Vec<f64> = Vec::new();
