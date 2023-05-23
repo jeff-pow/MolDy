@@ -9,4 +9,5 @@ debug = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+itertools = "0.10.5"
 rand = "0.8.5"

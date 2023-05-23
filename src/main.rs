@@ -1,4 +1,6 @@
 #![warn(non_snake_case)]
+use itertools::iproduct;
+use rand::rngs::StdRng;
 use rand::Rng;
 use std::f32::consts::PI;
 use std::fs::File;
@@ -6,13 +8,13 @@ use std::io::{BufWriter, Write};
 
 //mod bak;
 
-const KB: f64 = 1.38e-23;
+const KB: f64 = 1.3806e-23;
 const NA: f64 = 6.022e23;
 
-const NUM_TIME_STEPS: i32 = 500;
+const NUM_TIME_STEPS: i32 = 10000;
 const DT_STAR: f64 = 0.001;
 
-const N: i32 = 500;
+const N: i32 = 16384;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
 const EPS_STAR: f64 = EPSILON / KB;
@@ -37,21 +39,30 @@ fn main() {
     println!("{} cells overall", cells_3d);
     println!("{} cell length", cell_length);
     let mut f = BufWriter::new(File::create("rusty.xyz").unwrap());
+    let mut dbg_file = BufWriter::new(File::create("dbg.xyz").unwrap());
 
     let mut ke: Vec<f64> = Vec::new();
     let mut pe: Vec<f64> = Vec::new();
     let mut total_e: Vec<f64> = Vec::new();
 
     let mut accelerations: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
-    let mut old_accelerations: [[f64; 3]; N as usize];
+    let mut old_accelerations: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
     let mut positions = face_centered_cell();
     let mut velocities: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
-    let mut rng = rand::thread_rng();
+    let mut rng: StdRng = rand::SeedableRng::from_seed([3; 32]);
 
     for element in velocities.iter_mut().flatten() {
         *element = rng.gen_range(-1.0..1.0);
     }
 
+    write_dbg(
+        &positions,
+        &velocities,
+        &accelerations,
+        &old_accelerations,
+        &mut dbg_file,
+        0,
+    );
     thermostat(&mut velocities);
 
     let time_step = DT_STAR * f64::sqrt(MASS * SIGMA * SIGMA / EPS_STAR);
@@ -63,6 +74,14 @@ fn main() {
         }
 
         write_positions(&positions, &mut f, time);
+        write_dbg(
+            &positions,
+            &velocities,
+            &accelerations,
+            &old_accelerations,
+            &mut dbg_file,
+            time,
+        );
 
         for (idx, pos) in positions.iter_mut().enumerate() {
             for i in 0..3 {
@@ -96,9 +115,6 @@ fn main() {
         }
     }
     let avg_pe = pe.iter().sum::<f64>() / pe.len() as f64;
-    dbg!(ke);
-    dbg!(pe);
-    dbg!(&total_e);
 
     let sigma_over_l_over_two = SIGMA / (sim_length / 2.);
     let mut long_range_potential_corrections =
@@ -119,7 +135,7 @@ fn calc_forces(
     let mut net_potential = 0.0;
     let sim_length = f64::cbrt(N as f64 / RHO);
     let cells_per_dimension = (f64::floor(sim_length / TARGET_CELL_LENGTH)) as i32;
-    let cells_2d = cells_per_dimension * cells_per_dimension;
+    let cells_2d = cells_per_dimension.pow(2);
     let cells_3d = cells_per_dimension * cells_2d;
     let cell_length = sim_length / cells_per_dimension as f64;
 
@@ -130,77 +146,79 @@ fn calc_forces(
         let x = (positions[atom_idx as usize][0] / cell_length) as i32;
         let y = (positions[atom_idx as usize][1] / cell_length) as i32;
         let z = (positions[atom_idx as usize][2] / cell_length) as i32;
-        // Turn coordinates of cell into a cell index for the header array
         let c = x * cells_2d + y * cells_per_dimension + z;
-        // Link current atom to previous occupant
         cell_list[atom_idx as usize] = header[c as usize];
-        // Current atom is the highest in its cell, so it goes in the header
         header[c as usize] = atom_idx;
     }
 
     for c in 0..cells_3d {
-        net_potential += calc_forces_on_cell(c, accelerations, positions, &header, &cell_list);
+        net_potential +=
+            calc_forces_on_cell(c as usize, accelerations, positions, &header, &cell_list);
     }
 
     net_potential
 }
 
 fn calc_forces_on_cell(
-    cell_idx: i32,
+    cell_idx: usize,
     accel: &mut [[f64; 3]; N as usize],
     pos: &[[f64; 3]; N as usize],
-    header: &[i32],
-    cell_list: &[i32; N as usize],
+    cell_header: &[i32],
+    atom_cell_list: &[i32; N as usize],
 ) -> f64 {
     let mut potential = 0.0;
     let sim_length = f64::cbrt(N as f64 / RHO);
-    let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH);
-    let cells_2d = cells_per_dimension * cells_per_dimension;
-    let cell_x = cell_idx / cells_2d as i32;
-    let remainder = cell_idx % cells_2d as i32;
-    let cell_y = remainder / cells_per_dimension as i32;
-    let cell_z = remainder % cells_per_dimension as i32;
+    let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH) as i32;
+    let cells_2d = cells_per_dimension.pow(2);
+    let cell_x = cell_idx as i32 / cells_2d;
+    let remainder = cell_idx as i32 % cells_2d;
+    let cell_y = remainder / cells_per_dimension;
+    let cell_z = remainder % cells_per_dimension;
 
-    for one in cell_x - 1..cell_x + 2 {
-        for two in cell_y - 1..cell_y + 2 {
-            for three in cell_z - 1..cell_z + 2 {
-                let shifted_x = (one + cells_per_dimension as i32) % cells_per_dimension as i32;
-                let shifted_y = (two + cells_per_dimension as i32) % cells_per_dimension as i32;
-                let shifted_z = (three + cells_per_dimension as i32) % cells_per_dimension as i32;
-                let neighbor_idx = shifted_x * cells_2d as i32
-                    + shifted_y * cells_per_dimension as i32
-                    + shifted_z;
-                let mut i = header[cell_idx as usize];
-                while i > -1 {
-                    let mut j = header[neighbor_idx as usize];
-                    while j > -1 {
-                        if i < j {
-                            let mut dist_arr = [0.; 3];
-                            for k in 0..3 {
-                                dist_arr[k] = pos[i as usize][k] - pos[j as usize][k];
-                                dist_arr[k] -= sim_length * f64::round(dist_arr[k] / sim_length);
-                            }
-                            let r2 = dot(&dist_arr);
-                            assert_ne!(r2, 0.);
-                            if r2 < R_CUTOFF_SQUARED {
-                                let s2or2 = SIGMA * SIGMA / r2; // Sigma squared over r squared
-                                let sor6 = s2or2 * s2or2 * s2or2; // Sigma over r to the sixth
-                                let sor12 = sor6 * sor6; // Sigma over r to the twelfth
-                                let force_over_r = 24. * EPS_STAR / r2 * (2. * sor12 - sor6);
-                                potential += 4. * EPS_STAR * (sor12 - sor6);
-                                for k in 0..3 {
-                                    accel[i as usize][k] += force_over_r * dist_arr[k] / MASS;
-                                    accel[j as usize][k] -= force_over_r * dist_arr[k] / MASS;
-                                }
-                            }
+    for (one, two, three) in iproduct!(
+        cell_x - 1..=cell_x + 1,
+        cell_y - 1..=cell_y + 1,
+        cell_z - 1..=cell_z + 1
+    ) {
+        let shifted_x = (one + cells_per_dimension) % cells_per_dimension;
+        let shifted_y = (two + cells_per_dimension) % cells_per_dimension;
+        let shifted_z = (three + cells_per_dimension) % cells_per_dimension;
+        let neighbor_idx = shifted_x * cells_2d + shifted_y * cells_per_dimension + shifted_z;
+        let mut i = cell_header[cell_idx];
+        while i > -1 {
+            let mut j = cell_header[neighbor_idx as usize];
+            while j > -1 {
+                if i < j {
+                    let dist_arr: [f64; 3] = pos[i as usize]
+                        .iter()
+                        .zip(pos[j as usize].iter())
+                        .map(|(&a, &b)| {
+                            let diff = a - b;
+                            diff - sim_length * f64::round(diff / sim_length)
+                        })
+                        .collect::<Vec<f64>>()
+                        .try_into()
+                        .unwrap();
+                    let r2 = dot(&dist_arr);
+                    assert_ne!(r2, 0.);
+                    if r2 < R_CUTOFF_SQUARED {
+                        let s2or2 = SIGMA * SIGMA / r2;
+                        let sor6 = s2or2 * s2or2 * s2or2;
+                        let sor12 = sor6 * sor6;
+                        let force_over_r = 24. * EPS_STAR / r2 * (2. * sor12 - sor6);
+                        potential += 4. * EPS_STAR * (sor12 - sor6);
+                        for k in 0..3 {
+                            accel[i as usize][k] += force_over_r * dist_arr[k] / MASS;
+                            accel[j as usize][k] -= force_over_r * dist_arr[k] / MASS;
                         }
-                        j = cell_list[j as usize];
                     }
-                    i = cell_list[i as usize];
                 }
+                j = atom_cell_list[j as usize];
             }
+            i = atom_cell_list[i as usize];
         }
     }
+
     potential
 }
 
@@ -211,8 +229,37 @@ fn write_positions(pos: &[[f64; 3]], file: &mut BufWriter<File>, time: i32) {
     }
 }
 
+fn write_dbg(
+    pos: &[[f64; 3]],
+    vel: &[[f64; 3]],
+    accel: &[[f64; 3]],
+    old_accel: &[[f64; 3]],
+    file: &mut BufWriter<File>,
+    time: i32,
+) {
+    write!(file, "{}\nTime: {}\n", N, time).expect("File not found");
+    for atom in pos.iter() {
+        writeln!(file, "pos {:.5} {:.5} {:.5}", atom[0], atom[1], atom[2]).expect("File not found");
+    }
+    for atom in vel.iter() {
+        writeln!(file, "vel {:.5} {:.5} {:.5}", atom[0], atom[1], atom[2]).expect("File not found");
+    }
+    for atom in accel.iter() {
+        writeln!(file, "accel {:.5} {:.5} {:.5}", atom[0], atom[1], atom[2])
+            .expect("File not found");
+    }
+    for atom in old_accel.iter() {
+        writeln!(
+            file,
+            "old accel {:.5} {:.5} {:.5}",
+            atom[0], atom[1], atom[2]
+        )
+        .expect("File not found");
+    }
+}
+
 fn thermostat(velocities: &mut [[f64; 3]; N as usize]) {
-    let mut instant_temp: f64 = velocities.iter().map(|&x| dot(&x)).sum();
+    let mut instant_temp: f64 = velocities.iter().map(|&x| MASS * dot(&x)).sum();
     instant_temp /= (3 * N - 3) as f64;
     let temp_scalar = f64::sqrt(TARGET_TEMP / instant_temp);
     for vel in velocities.iter_mut().flatten() {
