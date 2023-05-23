@@ -14,7 +14,7 @@ const NA: f64 = 6.022e23;
 const NUM_TIME_STEPS: i32 = 10000;
 const DT_STAR: f64 = 0.001;
 
-const N: i32 = 16384;
+const N: i32 = 4000;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
 const EPS_STAR: f64 = EPSILON / KB;
@@ -83,23 +83,28 @@ fn main() {
             time,
         );
 
-        for (idx, pos) in positions.iter_mut().enumerate() {
-            for i in 0..3 {
-                pos[i] += velocities[idx][i] * time_step
-                    + 0.5 * accelerations[idx][i] * time_step * time_step;
-                pos[i] += -sim_length * f64::floor(pos[i] / sim_length);
-            }
-        }
+        positions
+            .iter_mut()
+            .flatten()
+            .zip(velocities.iter().flatten())
+            .zip(accelerations.iter().flatten())
+            .for_each(|((p, v), a)| *p += v * time_step + 0.5 * a * time_step * time_step);
+        positions
+            .iter_mut()
+            .flatten()
+            .for_each(|v| *v += -sim_length * f64::floor(*v / sim_length));
         old_accelerations = accelerations;
 
         accelerations = [[0.0; 3]; N as usize];
         let net_potential = calc_forces(&positions, &mut accelerations);
 
-        for (idx, vels) in velocities.iter_mut().enumerate() {
-            for k in 0..3 {
-                vels[k] += 0.5 * (accelerations[idx][k] + old_accelerations[idx][k]) * time_step;
-            }
-        }
+        velocities
+            .iter_mut()
+            .flatten()
+            .zip(accelerations.iter().flatten())
+            .zip(old_accelerations.iter().flatten())
+            .for_each(|((v, a), oa)| *v += 0.5 * (a + oa) * time_step);
+
         let total_vel_squared: f64 = velocities.iter().flatten().map(|&x| x * x).sum();
 
         if time < NUM_TIME_STEPS / 2 && time % 5 == 0 {
