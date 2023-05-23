@@ -81,10 +81,12 @@ fn main() {
             .flatten()
             .zip(vel.iter().flatten())
             .zip(accel.iter().flatten())
-            .for_each(|((p, v), a)| *p += v * time_step + 0.5 * a * time_step * time_step);
+            .for_each(|((pos, vel), accel)| {
+                *pos += vel * time_step + 0.5 * accel * time_step * time_step
+            });
         pos.iter_mut()
             .flatten()
-            .for_each(|p| *p += -sim_length * f64::floor(*p / sim_length));
+            .for_each(|pos| *pos += -sim_length * f64::floor(*pos / sim_length));
         old_accel = accel;
 
         accel = [[0.0; 3]; N as usize];
@@ -94,7 +96,7 @@ fn main() {
             .flatten()
             .zip(accel.iter().flatten())
             .zip(old_accel.iter().flatten())
-            .for_each(|((v, a), oa)| *v += 0.5 * (a + oa) * time_step);
+            .for_each(|((vel, accel), old_accel)| *vel += 0.5 * (accel + old_accel) * time_step);
 
         let total_vel_squared: f64 = vel.iter().flatten().map(|&x| x * x).sum();
 
@@ -203,18 +205,14 @@ fn calc_forces_on_cell(
                         let sor12 = sor6 * sor6;
                         let force_over_r = 24. * EPS_STAR / r2 * (2. * sor12 - sor6);
                         potential += 4. * EPS_STAR * (sor12 - sor6);
-                        // for k in 0..3 {
-                        //     accel[i as usize][k] += force_over_r * dist_arr[k] / MASS;
-                        //     accel[j as usize][k] -= force_over_r * dist_arr[k] / MASS;
-                        // }
                         accel[i as usize]
                             .iter_mut()
                             .zip(dist_arr.iter())
-                            .for_each(|(a, d)| *a += force_over_r * d / MASS);
+                            .for_each(|(accel, dist)| *accel += force_over_r * dist / MASS);
                         accel[j as usize]
                             .iter_mut()
                             .zip(dist_arr.iter())
-                            .for_each(|(a, d)| *a -= force_over_r * d / MASS);
+                            .for_each(|(accel, dist)| *accel -= force_over_r * dist / MASS);
                     }
                 }
                 j = atom_cell_list[j as usize];
