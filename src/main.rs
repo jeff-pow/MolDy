@@ -14,7 +14,7 @@ const NA: f64 = 6.022e23;
 const NUM_TIME_STEPS: i32 = 10000;
 const DT_STAR: f64 = 0.001;
 
-const N: i32 = 4000;
+const N: i32 = 13500;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
 const EPS_STAR: f64 = EPSILON / KB;
@@ -74,14 +74,14 @@ fn main() {
         }
 
         write_positions(&positions, &mut f, time);
-        write_dbg(
-            &positions,
-            &velocities,
-            &accelerations,
-            &old_accelerations,
-            &mut dbg_file,
-            time,
-        );
+        // write_dbg(
+        //     &positions,
+        //     &velocities,
+        //     &accelerations,
+        //     &old_accelerations,
+        //     &mut dbg_file,
+        //     time,
+        // );
 
         positions
             .iter_mut()
@@ -92,7 +92,7 @@ fn main() {
         positions
             .iter_mut()
             .flatten()
-            .for_each(|v| *v += -sim_length * f64::floor(*v / sim_length));
+            .for_each(|p| *p += -sim_length * f64::floor(*p / sim_length));
         old_accelerations = accelerations;
 
         accelerations = [[0.0; 3]; N as usize];
