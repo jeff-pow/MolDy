@@ -52,7 +52,6 @@ fn main() {
     let mut total_e: Vec<f64> = Vec::new();
 
     let mut accel = [[0.0; 3]; N as usize];
-    std::process::exit(1);
     let mut old_accel = [[0.0; 3]; N as usize];
     let mut pos = face_centered_cell();
     let mut rng: StdRng = rand::SeedableRng::from_seed([3; 32]);
@@ -293,7 +292,7 @@ fn dot(arr: &[f64; 3]) -> f64 {
 }
 
 fn face_centered_cell() -> [[f64; 3]; N as usize] {
-    let n = f64::ceil(f64::cbrt(N as f64 / 4.));
+    let n = f64::round(f64::cbrt(N as f64 / 4.));
     println!("n: {n}");
     let sim_length = f64::cbrt(N as f64 / RHO);
     let dr = sim_length / n as f64;
