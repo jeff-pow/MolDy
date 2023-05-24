@@ -38,7 +38,7 @@ const double Na = 6.022 * std::pow(10, 23); // Atoms per mole
 const int numTimeSteps = 10000;
 const double dt_star= .001;
 
-const int N = 864; // Number of atoms in simulation
+const int N = 13500; // Number of atoms in simulation
 const double SIGMA = 3.405; // Angstroms
 const double EPSILON = 1.6540 * std::pow(10, -21); // Joules
 const double EPS_STAR = EPSILON / Kb; // ~ 119.8 K
@@ -100,6 +100,7 @@ int main() {
     std::uniform_real_distribution<double> distribution(-1.0, 1.0);
 
     std::vector<Atom> atomList = faceCenteredCell();
+    std::cout << "Atoms length: " << atomList.size() << std::endl;
 
     for (int i = 0; i < N; ++i) { // Randomize velocities
          for (int j = 0; j < 3; ++j) {
@@ -214,9 +215,6 @@ double calcForcesOnCell(std::array<int, 3> cell, std::vector<Atom> &atomList, st
                 }
                 // Scalar index of neighboring cell
                 int c1 = shiftedNeighbor[0] * numCellsYZ + shiftedNeighbor[1] * numCellsPerDirection + shiftedNeighbor[2];
-                output.lock();
-                std::cout << c << " on " << c1 << std::endl;
-                output.unlock();
 
                 int i = header[c]; // Find the highest numbered atom in each cell
                 while (i > -1) { 

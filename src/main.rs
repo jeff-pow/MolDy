@@ -17,7 +17,7 @@ const DT_STAR: f64 = 0.001;
 
 // Formula to find # atoms is x^3 * 4
 // 13500 is a known problem I have no idea why...
-const N: i32 = 13500;
+const N: i32 = 171500;
 //const N: i32 = 500;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
@@ -52,6 +52,7 @@ fn main() {
     let mut total_e: Vec<f64> = Vec::new();
 
     let mut accel = [[0.0; 3]; N as usize];
+    std::process::exit(1);
     let mut old_accel = [[0.0; 3]; N as usize];
     let mut pos = face_centered_cell();
     let mut rng: StdRng = rand::SeedableRng::from_seed([3; 32]);
@@ -68,9 +69,9 @@ fn main() {
     let time_step = DT_STAR * f64::sqrt(MASS * SIGMA * SIGMA / EPS_STAR);
     for time in 0..NUM_TIME_STEPS {
         let progress = (time as f64 / NUM_TIME_STEPS as f64) * 100.;
-        // print!("\r");
-        // print!("{:.1}%", progress);
-        // std::io::stdout().flush().unwrap();
+        print!("\r");
+        print!("{:.1}%", progress);
+        std::io::stdout().flush().unwrap();
 
         write_positions(&pos, &mut f, time);
         write_dbg(&pos, &vel, &accel, &old_accel, &mut dbg_file, time);
@@ -292,17 +293,18 @@ fn dot(arr: &[f64; 3]) -> f64 {
 }
 
 fn face_centered_cell() -> [[f64; 3]; N as usize] {
-    let n: i32 = f64::cbrt(N as f64 / 4.) as i32;
+    let n = f64::ceil(f64::cbrt(N as f64 / 4.));
+    println!("n: {n}");
     let sim_length = f64::cbrt(N as f64 / RHO);
-    let dr: f64 = sim_length / n as f64;
-    let dro2: f64 = dr / 2.0;
+    let dr = sim_length / n as f64;
+    let dro2 = dr / 2.0;
 
     let mut count = 0;
     let mut positions: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
 
-    for i in 0..n {
-        for j in 0..n {
-            for k in 0..n {
+    for i in 0..n as i32 {
+        for j in 0..n as i32 {
+            for k in 0..n as i32 {
                 positions[count] = [i as f64 * dr, j as f64 * dr, k as f64 * dr];
                 count += 1;
                 positions[count] = [i as f64 * dr + dro2, j as f64 * dr + dro2, k as f64 * dr];
