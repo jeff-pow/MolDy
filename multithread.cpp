@@ -38,7 +38,7 @@ const double Na = 6.022 * std::pow(10, 23); // Atoms per mole
 const int numTimeSteps = 10000;
 const double dt_star= .001;
 
-const int N = 16384; // Number of atoms in simulation
+const int N = 864; // Number of atoms in simulation
 const double SIGMA = 3.405; // Angstroms
 const double EPSILON = 1.6540 * std::pow(10, -21); // Joules
 const double EPS_STAR = EPSILON / Kb; // ~ 119.8 K
@@ -64,6 +64,7 @@ void radialDistribution();
 BS::thread_pool pool(std::thread::hardware_concurrency());
 //BS::thread_pool pool(1);
 std::array<std::mutex, N> mutexes;
+std::mutex output;
 
 const double targetCellLength = rCutoff; // Not worth calculating forces past this distance, negligible
 const int numCellsPerDirection = std::floor(L / targetCellLength); // Number of invisible cells in each dimension for cell lists method
@@ -114,7 +115,7 @@ int main() {
     double count = .05;
     for (int i = 0; i < numTimeSteps; ++i) { // Main loop handles integration and printing to files
         if (i > count * numTimeSteps) { // Percent progress
-            std::cout << count * 100 << "% \n";
+            //std::cout << count * 100 << "% \n";
             count += .05;
         }
 
@@ -213,6 +214,9 @@ double calcForcesOnCell(std::array<int, 3> cell, std::vector<Atom> &atomList, st
                 }
                 // Scalar index of neighboring cell
                 int c1 = shiftedNeighbor[0] * numCellsYZ + shiftedNeighbor[1] * numCellsPerDirection + shiftedNeighbor[2];
+                output.lock();
+                std::cout << c << " on " << c1 << std::endl;
+                output.unlock();
 
                 int i = header[c]; // Find the highest numbered atom in each cell
                 while (i > -1) { 

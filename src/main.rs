@@ -17,8 +17,8 @@ const DT_STAR: f64 = 0.001;
 
 // Formula to find # atoms is x^3 * 4
 // 13500 is a known problem I have no idea why...
-//const N: i32 = 13500;
-const N: i32 = 500;
+const N: i32 = 13500;
+//const N: i32 = 500;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
 const EPS_STAR: f64 = EPSILON / KB;
@@ -68,9 +68,9 @@ fn main() {
     let time_step = DT_STAR * f64::sqrt(MASS * SIGMA * SIGMA / EPS_STAR);
     for time in 0..NUM_TIME_STEPS {
         let progress = (time as f64 / NUM_TIME_STEPS as f64) * 100.;
-        print!("\r");
-        print!("{:.1}%", progress);
-        std::io::stdout().flush().unwrap();
+        // print!("\r");
+        // print!("{:.1}%", progress);
+        // std::io::stdout().flush().unwrap();
 
         write_positions(&pos, &mut f, time);
         write_dbg(&pos, &vel, &accel, &old_accel, &mut dbg_file, time);
@@ -280,17 +280,15 @@ fn write_dbg(
     }
 }
 
-fn thermostat(velocities: &mut [[f64; 3]; N as usize]) {
-    let instant_temp = velocities.iter().map(|&x| MASS * dot(&x)).sum::<f64>() / (3 * N - 3) as f64;
+fn thermostat(vel: &mut [[f64; 3]; N as usize]) {
+    let instant_temp = vel.iter().map(|x| MASS * dot(x)).sum::<f64>() / (3 * N - 3) as f64;
     let temp_scalar = f64::sqrt(TARGET_TEMP / instant_temp);
-    for vel in velocities.iter_mut().flatten() {
-        *vel *= temp_scalar;
-    }
+    vel.iter_mut().flatten().for_each(|x| *x *= temp_scalar);
 }
 
 #[inline]
 fn dot(arr: &[f64; 3]) -> f64 {
-    arr.iter().map(|&x| x * x).sum()
+    arr.iter().map(|x| x * x).sum()
 }
 
 fn face_centered_cell() -> [[f64; 3]; N as usize] {
