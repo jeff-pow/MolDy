@@ -1,4 +1,5 @@
 #![warn(non_snake_case)]
+use array_init::array_init;
 use itertools::iproduct;
 use rand::rngs::StdRng;
 use rand::Rng;
@@ -11,12 +12,13 @@ use std::io::{BufWriter, Write};
 const KB: f64 = 1.3806e-23;
 const NA: f64 = 6.022e23;
 
-const NUM_TIME_STEPS: i32 = 10000;
+const NUM_TIME_STEPS: i32 = 5000;
 const DT_STAR: f64 = 0.001;
 
 // Formula to find # atoms is x^3 * 4
 // 13500 is a known problem I have no idea why...
-const N: i32 = 4000;
+//const N: i32 = 13500;
+const N: i32 = 500;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
 const EPS_STAR: f64 = EPSILON / KB;
@@ -40,6 +42,8 @@ fn main() {
     println!("{} atoms", N);
     println!("{} cells overall", cells_3d);
     println!("{} cell length", cell_length);
+    println!();
+
     let mut f = BufWriter::new(File::create("rusty.xyz").unwrap());
     let mut dbg_file = BufWriter::new(File::create("dbg.txt").unwrap());
 
@@ -47,36 +51,29 @@ fn main() {
     let mut pe: Vec<f64> = Vec::new();
     let mut total_e: Vec<f64> = Vec::new();
 
-    let mut accel: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
-    let mut old_accel: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
+    let mut accel = [[0.0; 3]; N as usize];
+    let mut old_accel = [[0.0; 3]; N as usize];
     let mut pos = face_centered_cell();
-    let mut vel: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
     let mut rng: StdRng = rand::SeedableRng::from_seed([3; 32]);
+    let mut vel: [[f64; 3]; N as usize] = array_init(|_| {
+        [
+            rng.gen_range(-1.0..1.0),
+            rng.gen_range(-1.0..1.0),
+            rng.gen_range(-1.0..1.0),
+        ]
+    });
 
-    for element in vel.iter_mut().flatten() {
-        *element = rng.gen_range(-1.0..1.0);
-    }
-
-    write_dbg(&pos, &vel, &accel, &old_accel, &mut dbg_file, 0);
     thermostat(&mut vel);
 
     let time_step = DT_STAR * f64::sqrt(MASS * SIGMA * SIGMA / EPS_STAR);
-    let mut count = 0.05;
     for time in 0..NUM_TIME_STEPS {
-        if time as f64 > count * NUM_TIME_STEPS as f64 {
-            println!("{}%", (count * 100.) as i32);
-            count += 0.05;
-        }
+        let progress = (time as f64 / NUM_TIME_STEPS as f64) * 100.;
+        print!("\r");
+        print!("{:.1}%", progress);
+        std::io::stdout().flush().unwrap();
 
         write_positions(&pos, &mut f, time);
-        // write_dbg(
-        //     &positions,
-        //     &velocities,
-        //     &accelerations,
-        //     &old_accelerations,
-        //     &mut dbg_file,
-        //     time,
-        // );
+        write_dbg(&pos, &vel, &accel, &old_accel, &mut dbg_file, time);
 
         pos.iter_mut()
             .flatten()
@@ -113,6 +110,7 @@ fn main() {
             total_e.push(net_ke + net_potential);
         }
     }
+    println!("\n");
     let avg_pe = pe.iter().sum::<f64>() / pe.len() as f64;
 
     let sigma_over_l_over_two = SIGMA / (sim_length / 2.);
@@ -123,7 +121,6 @@ fn main() {
     long_range_potential_corrections *= temp - temp1;
     let pestar = ((avg_pe + long_range_potential_corrections) / N as f64) / EPS_STAR;
     println!("Avg PE: {avg_pe}");
-    println!("Average energy: {}", total_e[total_e.len() - 1]);
     println!("Reduced potential: {}", pestar);
 }
 
@@ -188,7 +185,15 @@ fn calc_forces_on_cell(
             let mut j = cell_header[neighbor_idx as usize];
             while j > -1 {
                 if i < j {
-                    let dist_arr: [f64; 3] = pos[i as usize]
+                    // {
+                    //     let i = i as usize;
+                    //     let j = j as usize;
+                    //     println!(
+                    //         "i: {i} {} {} {}  j: {j} {} {} {}",
+                    //         pos[i][0], pos[i][1], pos[i][2], pos[j][0], pos[j][1], pos[j][2]
+                    //     );
+                    // }
+                    let dist_arr = pos[i as usize]
                         .iter()
                         .zip(pos[j as usize].iter())
                         .map(|(&a, &b)| {
@@ -241,20 +246,34 @@ fn write_dbg(
     time: i32,
 ) {
     write!(file, "{}\nTime: {}\n", N, time).expect("File not found");
-    for atom in pos.iter() {
-        writeln!(file, "pos {:.5} {:.5} {:.5}", atom[0], atom[1], atom[2]).expect("File not found");
-    }
-    for atom in vel.iter() {
-        writeln!(file, "vel {:.5} {:.5} {:.5}", atom[0], atom[1], atom[2]).expect("File not found");
-    }
-    for atom in accel.iter() {
-        writeln!(file, "accel {:.5} {:.5} {:.5}", atom[0], atom[1], atom[2])
-            .expect("File not found");
-    }
-    for atom in old_accel.iter() {
+    for (idx, atom) in pos.iter().enumerate() {
         writeln!(
             file,
-            "old accel {:.5} {:.5} {:.5}",
+            "{idx} pos {:.5} {:.5} {:.5}",
+            atom[0], atom[1], atom[2]
+        )
+        .expect("File not found");
+    }
+    for (idx, atom) in vel.iter().enumerate() {
+        writeln!(
+            file,
+            "{idx} vel {:.5} {:.5} {:.5}",
+            atom[0], atom[1], atom[2]
+        )
+        .expect("File not found");
+    }
+    for (idx, atom) in accel.iter().enumerate() {
+        writeln!(
+            file,
+            "{idx} accel {:.5} {:.5} {:.5}",
+            atom[0], atom[1], atom[2]
+        )
+        .expect("File not found");
+    }
+    for (idx, atom) in old_accel.iter().enumerate() {
+        writeln!(
+            file,
+            "{idx} old accel {:.5} {:.5} {:.5}",
             atom[0], atom[1], atom[2]
         )
         .expect("File not found");
@@ -262,8 +281,7 @@ fn write_dbg(
 }
 
 fn thermostat(velocities: &mut [[f64; 3]; N as usize]) {
-    let mut instant_temp: f64 = velocities.iter().map(|&x| MASS * dot(&x)).sum();
-    instant_temp /= (3 * N - 3) as f64;
+    let instant_temp = velocities.iter().map(|&x| MASS * dot(&x)).sum::<f64>() / (3 * N - 3) as f64;
     let temp_scalar = f64::sqrt(TARGET_TEMP / instant_temp);
     for vel in velocities.iter_mut().flatten() {
         *vel *= temp_scalar;
