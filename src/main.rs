@@ -17,7 +17,7 @@ const NUM_TIME_STEPS: i32 = 5000;
 const DT_STAR: f64 = 0.001;
 
 // Formula to find # atoms is x^3 * 4
-const N: i32 = 171500;
+const N: i32 = 4000;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
 const EPS_STAR: f64 = EPSILON / KB;
@@ -92,25 +92,21 @@ fn main() {
         pos.iter_mut()
             .flatten()
             .zip(vel.iter().flatten())
-            .zip(old_accel.iter().flatten())
+            .zip(accel.iter().flat_map(|guard| *guard.read().unwrap()))
             .for_each(|((pos, vel), accel)| {
                 *pos += vel * time_step + 0.5 * accel * time_step * time_step;
+                *pos -= sim_length * f64::floor(*pos / sim_length);
             });
         pos.iter_mut()
             .flatten()
             .for_each(|pos| *pos += -sim_length * f64::floor(*pos / sim_length));
 
-        let accel = Arc::new(
-            (0..N as usize)
-                .map(|_| RwLock::from([0.0; 3]))
-                .collect::<Vec<_>>(),
-        );
+        let accel = Arc::new((0..N).map(|_| RwLock::from([0.0; 3])).collect::<Vec<_>>());
         let net_potential = calc_forces(&pos, &accel, &cell_interaction_indexes);
-        let tmp = accel.iter().map(|guard| *guard.read().unwrap());
 
         vel.iter_mut()
             .flatten()
-            .zip(tmp.flatten())
+            .zip(accel.iter().flat_map(|guard| *guard.read().unwrap()))
             .zip(old_accel.iter().flatten())
             .for_each(|((vel, accel), old_accel)| *vel += 0.5 * (accel + old_accel) * time_step);
 
@@ -198,9 +194,7 @@ fn calc_forces_on_cell(
         while i > -1 {
             let mut j = cell_header[*neighbor_idx as usize];
             while j > -1 {
-
                 if i < j || cell_idx != *neighbor_idx as usize {
-
                     let dist_arr = pos[i as usize]
                         .iter()
                         .zip(pos[j as usize].iter())
@@ -249,6 +243,7 @@ fn write_positions(pos: &[[f64; 3]], file: &mut BufWriter<File>, time: i32) {
     }
 }
 
+#[allow(dead_code)]
 fn write_dbg(
     pos: &[[f64; 3]],
     vel: &[[f64; 3]],
