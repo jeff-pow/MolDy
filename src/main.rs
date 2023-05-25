@@ -1,9 +1,11 @@
 #![warn(non_snake_case)]
 use rand::rngs::StdRng;
 use rand::Rng;
+use rayon::prelude::*;
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::{BufWriter, Write};
+use std::sync::{Arc, RwLock};
 use std::time::{Duration, Instant};
 
 //mod bak;
@@ -15,7 +17,7 @@ const NUM_TIME_STEPS: i32 = 5000;
 const DT_STAR: f64 = 0.001;
 
 // Formula to find # atoms is x^3 * 4
-const N: i32 = 4000;
+const N: i32 = 171500;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
 const EPS_STAR: f64 = EPSILON / KB;
@@ -42,14 +44,19 @@ fn main() {
     println!();
 
     let mut f = BufWriter::new(File::create("rusty.xyz").unwrap());
-    let mut dbg_file = BufWriter::new(File::create("dbg.txt").unwrap());
+    let mut _dbg_file = BufWriter::new(File::create("dbg.txt").unwrap());
 
     let mut ke = Vec::new();
     let mut pe = Vec::new();
     let mut total_e = Vec::new();
 
-    let mut accel = vec![[0.0; 3]; N as usize];
-    let mut old_accel;
+    let accel = Arc::new(
+        (0..N as usize)
+            .map(|_| RwLock::from([0.0; 3]))
+            .collect::<Vec<_>>(),
+    );
+
+    let mut old_accel: Vec<[f64; 3]> = Vec::new();
     let mut pos = face_centered_cell();
     let mut rng: StdRng = rand::SeedableRng::from_seed([3; 32]);
     let mut vel = (0..N)
@@ -77,24 +84,33 @@ fn main() {
         write_positions(&pos, &mut f, time);
         //write_dbg(&pos, &vel, &accel, &old_accel, &mut dbg_file, time);
 
+        old_accel.clear();
+        for lock in accel.iter() {
+            let guard = lock.read().unwrap();
+            old_accel.push(*guard);
+        }
         pos.iter_mut()
             .flatten()
             .zip(vel.iter().flatten())
-            .zip(accel.iter().flatten())
+            .zip(old_accel.iter().flatten())
             .for_each(|((pos, vel), accel)| {
-                *pos += vel * time_step + 0.5 * accel * time_step * time_step
+                *pos += vel * time_step + 0.5 * accel * time_step * time_step;
             });
         pos.iter_mut()
             .flatten()
             .for_each(|pos| *pos += -sim_length * f64::floor(*pos / sim_length));
-        old_accel = accel;
 
-        accel = vec![[0.0; 3]; N as usize];
-        let net_potential = calc_forces(&pos, &mut accel, &cell_interaction_indexes);
+        let accel = Arc::new(
+            (0..N as usize)
+                .map(|_| RwLock::from([0.0; 3]))
+                .collect::<Vec<_>>(),
+        );
+        let net_potential = calc_forces(&pos, &accel, &cell_interaction_indexes);
+        let tmp = accel.iter().map(|guard| *guard.read().unwrap());
 
         vel.iter_mut()
             .flatten()
-            .zip(accel.iter().flatten())
+            .zip(tmp.flatten())
             .zip(old_accel.iter().flatten())
             .for_each(|((vel, accel), old_accel)| *vel += 0.5 * (accel + old_accel) * time_step);
 
@@ -128,45 +144,47 @@ fn main() {
 
 fn calc_forces(
     pos: &[[f64; 3]],
-    accel: &mut [[f64; 3]],
+    accel: &[RwLock<[f64; 3]>],
     cell_interaction_indexes: &[Vec<i32>],
 ) -> f64 {
-    let mut net_potential = 0.0;
+    let net_potential = RwLock::new(0.0);
     let sim_length = f64::cbrt(N as f64 / RHO);
     let cells_per_dimension = (f64::floor(sim_length / TARGET_CELL_LENGTH)) as i32;
     let cells_2d = cells_per_dimension.pow(2);
     let cells_3d = cells_per_dimension * cells_2d;
     let cell_length = sim_length / cells_per_dimension as f64;
 
-    let mut header = vec![-1; cells_3d as usize];
-    let mut cell_list = [-1; N as usize];
+    let mut cell_header = vec![-1; cells_3d as usize];
+    let mut atom_cell_list = [-1; N as usize];
 
     for atom_idx in 0..N {
         let x = (pos[atom_idx as usize][0] / cell_length) as i32;
         let y = (pos[atom_idx as usize][1] / cell_length) as i32;
         let z = (pos[atom_idx as usize][2] / cell_length) as i32;
         let c = x * cells_2d + y * cells_per_dimension + z;
-        cell_list[atom_idx as usize] = header[c as usize];
-        header[c as usize] = atom_idx;
+        atom_cell_list[atom_idx as usize] = cell_header[c as usize];
+        cell_header[c as usize] = atom_idx;
     }
 
-    for c in 0..cells_3d {
-        net_potential += calc_forces_on_cell(
+    (0..cells_3d).into_par_iter().for_each(|c| {
+        let ret_val = calc_forces_on_cell(
             c as usize,
             accel,
             pos,
-            &header,
-            &cell_list,
+            &cell_header,
+            &atom_cell_list,
             cell_interaction_indexes,
         );
-    }
+        *net_potential.write().unwrap() += ret_val;
+    });
 
-    net_potential
+    let x = *net_potential.read().unwrap();
+    x
 }
 
 fn calc_forces_on_cell(
     cell_idx: usize,
-    accel: &mut [[f64; 3]],
+    accel: &[RwLock<[f64; 3]>],
     pos: &[[f64; 3]],
     cell_header: &[i32],
     atom_cell_list: &[i32; N as usize],
@@ -200,10 +218,14 @@ fn calc_forces_on_cell(
                         let force_over_r = 24. * EPS_STAR / r2 * (2. * sor12 - sor6);
                         potential += 4. * EPS_STAR * (sor12 - sor6);
                         accel[i as usize]
+                            .write()
+                            .unwrap()
                             .iter_mut()
                             .zip(dist_arr.iter())
                             .for_each(|(accel, dist)| *accel += force_over_r * dist / MASS);
                         accel[j as usize]
+                            .write()
+                            .unwrap()
                             .iter_mut()
                             .zip(dist_arr.iter())
                             .for_each(|(accel, dist)| *accel -= force_over_r * dist / MASS);
@@ -281,13 +303,10 @@ fn dot(arr: &[f64; 3]) -> f64 {
 
 fn face_centered_cell() -> Vec<[f64; 3]> {
     let n = f64::round(f64::cbrt(N as f64 / 4.));
-    println!("n: {n}");
     let sim_length = f64::cbrt(N as f64 / RHO);
-    let dr = sim_length / n as f64;
+    let dr = sim_length / n;
     let dro2 = dr / 2.0;
 
-    let mut count = 0;
-    let mut positions: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
     let mut positions = Vec::new();
 
     for i in 0..n as i32 {
