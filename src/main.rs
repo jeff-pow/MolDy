@@ -180,14 +180,6 @@ fn calc_forces_on_cell(
             let mut j = cell_header[*neighbor_idx as usize];
             while j > -1 {
                 if i < j {
-                    // {
-                    //     let i = i as usize;
-                    //     let j = j as usize;
-                    //     println!(
-                    //         "i: {i} {} {} {}  j: {j} {} {} {}",
-                    //         pos[i][0], pos[i][1], pos[i][2], pos[j][0], pos[j][1], pos[j][2]
-                    //     );
-                    // }
                     let dist_arr = pos[i as usize]
                         .iter()
                         .zip(pos[j as usize].iter())
