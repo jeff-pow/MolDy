@@ -198,7 +198,9 @@ fn calc_forces_on_cell(
         while i > -1 {
             let mut j = cell_header[*neighbor_idx as usize];
             while j > -1 {
+
                 if i < j || cell_idx != *neighbor_idx as usize {
+
                     let dist_arr = pos[i as usize]
                         .iter()
                         .zip(pos[j as usize].iter())
