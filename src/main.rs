@@ -179,7 +179,7 @@ fn calc_forces_on_cell(
         while i > -1 {
             let mut j = cell_header[*neighbor_idx as usize];
             while j > -1 {
-                if i < j {
+                if i < j || cell_idx != *neighbor_idx as usize {
                     let dist_arr = pos[i as usize]
                         .iter()
                         .zip(pos[j as usize].iter())
@@ -351,15 +351,15 @@ fn calc_cell_interactions() -> Vec<Vec<i32>> {
         let mut arr: Vec<i32> = Vec::new();
         let cell = calc_cell_from_index(i);
 
-        arr.push(process_cell(cell[0] - 1, cell[1] - 1, cell[2] - 1));
-        arr.push(process_cell(cell[0] - 1, cell[1] - 1, cell[2]));
-        arr.push(process_cell(cell[0] - 1, cell[1] - 1, cell[2] + 1));
-        arr.push(process_cell(cell[0] - 1, cell[1], cell[2] - 1));
-        arr.push(process_cell(cell[0] - 1, cell[1], cell[2]));
-        arr.push(process_cell(cell[0] - 1, cell[1], cell[2] + 1));
-        arr.push(process_cell(cell[0] - 1, cell[1] + 1, cell[2] - 1));
-        arr.push(process_cell(cell[0] - 1, cell[1] + 1, cell[2]));
-        arr.push(process_cell(cell[0] - 1, cell[1] + 1, cell[2] + 1));
+        // arr.push(process_cell(cell[0] - 1, cell[1] - 1, cell[2] - 1));
+        // arr.push(process_cell(cell[0] - 1, cell[1] - 1, cell[2]));
+        // arr.push(process_cell(cell[0] - 1, cell[1] - 1, cell[2] + 1));
+        // arr.push(process_cell(cell[0] - 1, cell[1], cell[2] - 1));
+        // arr.push(process_cell(cell[0] - 1, cell[1], cell[2]));
+        // arr.push(process_cell(cell[0] - 1, cell[1], cell[2] + 1));
+        // arr.push(process_cell(cell[0] - 1, cell[1] + 1, cell[2] - 1));
+        // arr.push(process_cell(cell[0] - 1, cell[1] + 1, cell[2]));
+        // arr.push(process_cell(cell[0] - 1, cell[1] + 1, cell[2] + 1));
 
         arr.push(process_cell(cell[0], cell[1], cell[2]));
         arr.push(process_cell(cell[0], cell[1], cell[2] + 1));
