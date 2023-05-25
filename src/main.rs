@@ -16,8 +16,7 @@ const NUM_TIME_STEPS: i32 = 5000;
 const DT_STAR: f64 = 0.001;
 
 // Formula to find # atoms is x^3 * 4
-// 13500 is a known problem I have no idea why...
-const N: i32 = 256;
+const N: i32 = 171500;
 //const N: i32 = 500;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
@@ -74,7 +73,7 @@ fn main() {
         std::io::stdout().flush().unwrap();
 
         write_positions(&pos, &mut f, time);
-        write_dbg(&pos, &vel, &accel, &old_accel, &mut dbg_file, time);
+        //write_dbg(&pos, &vel, &accel, &old_accel, &mut dbg_file, time);
 
         pos.iter_mut()
             .flatten()
