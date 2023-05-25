@@ -1,11 +1,11 @@
 #![warn(non_snake_case)]
 use array_init::array_init;
-use itertools::iproduct;
 use rand::rngs::StdRng;
 use rand::Rng;
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::{BufWriter, Write};
+use std::time::{Duration, Instant};
 
 //mod bak;
 
@@ -16,8 +16,7 @@ const NUM_TIME_STEPS: i32 = 5000;
 const DT_STAR: f64 = 0.001;
 
 // Formula to find # atoms is x^3 * 4
-const N: i32 = 171500;
-//const N: i32 = 500;
+const N: i32 = 4000;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
 const EPS_STAR: f64 = EPSILON / KB;
@@ -50,26 +49,30 @@ fn main() {
     let mut pe: Vec<f64> = Vec::new();
     let mut total_e: Vec<f64> = Vec::new();
 
-    let mut accel = [[0.0; 3]; N as usize];
-    let mut old_accel = [[0.0; 3]; N as usize];
+    let mut accel = vec![[0.0; 3]; N as usize];
+    let mut old_accel;
     let mut pos = face_centered_cell();
     let mut rng: StdRng = rand::SeedableRng::from_seed([3; 32]);
-    let mut vel: [[f64; 3]; N as usize] = array_init(|_| {
-        [
-            rng.gen_range(-1.0..1.0),
-            rng.gen_range(-1.0..1.0),
-            rng.gen_range(-1.0..1.0),
-        ]
-    });
+    let mut vel = (0..N)
+        .map(|_| {
+            [
+                rng.gen_range(-1.0..1.0),
+                rng.gen_range(-1.0..1.0),
+                rng.gen_range(-1.0..1.0),
+            ]
+        })
+        .collect::<Vec<_>>();
     let cell_interaction_indexes = calc_cell_interactions();
 
     thermostat(&mut vel);
 
     let time_step = DT_STAR * f64::sqrt(MASS * SIGMA * SIGMA / EPS_STAR);
+    let start = Instant::now();
     for time in 0..NUM_TIME_STEPS {
         let progress = (time as f64 / NUM_TIME_STEPS as f64) * 100.;
-        print!("\r");
-        print!("{:.1}%", progress);
+        let duration = start.elapsed();
+        let time_left = estimate_time_left(progress, duration).unwrap();
+        print!("\r{:.1}% -- {:?} left                ", progress, time_left);
         std::io::stdout().flush().unwrap();
 
         write_positions(&pos, &mut f, time);
@@ -87,7 +90,7 @@ fn main() {
             .for_each(|pos| *pos += -sim_length * f64::floor(*pos / sim_length));
         old_accel = accel;
 
-        accel = [[0.0; 3]; N as usize];
+        accel = Vec::from([[0.0; 3]; N as usize]);
         let net_potential = calc_forces(&pos, &mut accel, &cell_interaction_indexes);
 
         vel.iter_mut()
@@ -125,8 +128,8 @@ fn main() {
 }
 
 fn calc_forces(
-    pos: &[[f64; 3]; N as usize],
-    accel: &mut [[f64; 3]; N as usize],
+    pos: &[[f64; 3]],
+    accel: &mut [[f64; 3]],
     cell_interaction_indexes: &[Vec<i32>],
 ) -> f64 {
     let mut net_potential = 0.0;
@@ -164,8 +167,8 @@ fn calc_forces(
 
 fn calc_forces_on_cell(
     cell_idx: usize,
-    accel: &mut [[f64; 3]; N as usize],
-    pos: &[[f64; 3]; N as usize],
+    accel: &mut [[f64; 3]],
+    pos: &[[f64; 3]],
     cell_header: &[i32],
     atom_cell_list: &[i32; N as usize],
     cell_interaction_indexes: &[Vec<i32>],
@@ -266,7 +269,7 @@ fn write_dbg(
     }
 }
 
-fn thermostat(vel: &mut [[f64; 3]; N as usize]) {
+fn thermostat(vel: &mut [[f64; 3]]) {
     let instant_temp = vel.iter().map(|x| MASS * dot(x)).sum::<f64>() / (3 * N - 3) as f64;
     let temp_scalar = f64::sqrt(TARGET_TEMP / instant_temp);
     vel.iter_mut().flatten().for_each(|x| *x *= temp_scalar);
@@ -277,7 +280,7 @@ fn dot(arr: &[f64; 3]) -> f64 {
     arr.iter().map(|x| x * x).sum()
 }
 
-fn face_centered_cell() -> [[f64; 3]; N as usize] {
+fn face_centered_cell() -> Vec<[f64; 3]> {
     let n = f64::round(f64::cbrt(N as f64 / 4.));
     println!("n: {n}");
     let sim_length = f64::cbrt(N as f64 / RHO);
@@ -286,18 +289,15 @@ fn face_centered_cell() -> [[f64; 3]; N as usize] {
 
     let mut count = 0;
     let mut positions: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
+    let mut positions = Vec::new();
 
     for i in 0..n as i32 {
         for j in 0..n as i32 {
             for k in 0..n as i32 {
-                positions[count] = [i as f64 * dr, j as f64 * dr, k as f64 * dr];
-                count += 1;
-                positions[count] = [i as f64 * dr + dro2, j as f64 * dr + dro2, k as f64 * dr];
-                count += 1;
-                positions[count] = [i as f64 * dr + dro2, j as f64 * dr, k as f64 * dr + dro2];
-                count += 1;
-                positions[count] = [i as f64 * dr, j as f64 * dr + dro2, k as f64 * dr + dro2];
-                count += 1;
+                positions.push([i as f64 * dr, j as f64 * dr, k as f64 * dr]);
+                positions.push([i as f64 * dr + dro2, j as f64 * dr + dro2, k as f64 * dr]);
+                positions.push([i as f64 * dr + dro2, j as f64 * dr, k as f64 * dr + dro2]);
+                positions.push([i as f64 * dr, j as f64 * dr + dro2, k as f64 * dr + dro2]);
             }
         }
     }
@@ -380,4 +380,12 @@ fn calc_cell_interactions() -> Vec<Vec<i32>> {
         cell_interaction_indexes.push(arr);
     }
     cell_interaction_indexes
+}
+
+fn estimate_time_left(percentage: f64, elapsed_time: Duration) -> Option<Duration> {
+    let elapsed_secs = elapsed_time.as_secs_f64();
+    let estimated_total_secs = elapsed_secs / (percentage / 100.0);
+    let estimated_remaining_secs = estimated_total_secs - elapsed_secs;
+
+    Some(Duration::from_secs(estimated_remaining_secs as u64))
 }
