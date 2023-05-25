@@ -1,11 +1,12 @@
 #![warn(non_snake_case)]
-use array_init::array_init;
-use itertools::iproduct;
 use rand::rngs::StdRng;
 use rand::Rng;
+use rayon::prelude::*;
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::{BufWriter, Write};
+use std::sync::{Arc, RwLock};
+use std::time::{Duration, Instant};
 
 //mod bak;
 
@@ -43,58 +44,77 @@ fn main() {
     println!();
 
     let mut f = BufWriter::new(File::create("rusty.xyz").unwrap());
-    let mut dbg_file = BufWriter::new(File::create("dbg.txt").unwrap());
+    let mut _dbg_file = BufWriter::new(File::create("dbg.txt").unwrap());
 
-    let mut ke: Vec<f64> = Vec::new();
-    let mut pe: Vec<f64> = Vec::new();
-    let mut total_e: Vec<f64> = Vec::new();
+    let mut ke = Vec::new();
+    let mut pe = Vec::new();
+    let mut total_e = Vec::new();
 
-    let mut accel = [[0.0; 3]; N as usize];
-    let mut old_accel = [[0.0; 3]; N as usize];
+    let accel = Arc::new(
+        (0..N as usize)
+            .map(|_| RwLock::from([0.0; 3]))
+            .collect::<Vec<_>>(),
+    );
+
+    let mut old_accel: Vec<[f64; 3]> = Vec::new();
     let mut pos = face_centered_cell();
     let mut rng: StdRng = rand::SeedableRng::from_seed([3; 32]);
-    let mut vel: [[f64; 3]; N as usize] = array_init(|_| {
-        [
-            rng.gen_range(-1.0..1.0),
-            rng.gen_range(-1.0..1.0),
-            rng.gen_range(-1.0..1.0),
-        ]
-    });
+    let mut vel = (0..N)
+        .map(|_| {
+            [
+                rng.gen_range(-1.0..1.0),
+                rng.gen_range(-1.0..1.0),
+                rng.gen_range(-1.0..1.0),
+            ]
+        })
+        .collect::<Vec<_>>();
+    let cell_interaction_indexes = calc_cell_interactions();
 
     thermostat(&mut vel);
 
     let time_step = DT_STAR * f64::sqrt(MASS * SIGMA * SIGMA / EPS_STAR);
+    let start = Instant::now();
     for time in 0..NUM_TIME_STEPS {
         let progress = (time as f64 / NUM_TIME_STEPS as f64) * 100.;
-        print!("\r");
-        print!("{:.1}%", progress);
+        let duration = start.elapsed();
+        let time_left = estimate_time_left(progress, duration).unwrap();
+        print!("\r{:.1}% -- {:?} left                ", progress, time_left);
         std::io::stdout().flush().unwrap();
 
         write_positions(&pos, &mut f, time);
-        write_dbg(&pos, &vel, &accel, &old_accel, &mut dbg_file, time);
+        //write_dbg(&pos, &vel, &accel, &old_accel, &mut dbg_file, time);
 
+        old_accel.clear();
+        for lock in accel.iter() {
+            let guard = lock.read().unwrap();
+            old_accel.push(*guard);
+        }
         pos.iter_mut()
             .flatten()
             .zip(vel.iter().flatten())
-            .zip(accel.iter().flatten())
+            .zip(old_accel.iter().flatten())
             .for_each(|((pos, vel), accel)| {
-                *pos += vel * time_step + 0.5 * accel * time_step * time_step
+                *pos += vel * time_step + 0.5 * accel * time_step * time_step;
             });
         pos.iter_mut()
             .flatten()
             .for_each(|pos| *pos += -sim_length * f64::floor(*pos / sim_length));
-        old_accel = accel;
 
-        accel = [[0.0; 3]; N as usize];
-        let net_potential = calc_forces(&pos, &mut accel);
+        let accel = Arc::new(
+            (0..N as usize)
+                .map(|_| RwLock::from([0.0; 3]))
+                .collect::<Vec<_>>(),
+        );
+        let net_potential = calc_forces(&pos, &accel, &cell_interaction_indexes);
+        let tmp = accel.iter().map(|guard| *guard.read().unwrap());
 
         vel.iter_mut()
             .flatten()
-            .zip(accel.iter().flatten())
+            .zip(tmp.flatten())
             .zip(old_accel.iter().flatten())
             .for_each(|((vel, accel), old_accel)| *vel += 0.5 * (accel + old_accel) * time_step);
 
-        let total_vel_squared: f64 = vel.iter().flatten().map(|&x| x * x).sum();
+        let total_vel_squared = vel.iter().flatten().map(|&x| x * x).sum::<f64>();
 
         if time < NUM_TIME_STEPS / 2 && time % 5 == 0 {
             thermostat(&mut vel);
@@ -123,66 +143,64 @@ fn main() {
 }
 
 fn calc_forces(
-    positions: &[[f64; 3]; N as usize],
-    accelerations: &mut [[f64; 3]; N as usize],
+    pos: &[[f64; 3]],
+    accel: &[RwLock<[f64; 3]>],
+    cell_interaction_indexes: &[Vec<i32>],
 ) -> f64 {
-    let mut net_potential = 0.0;
+    let net_potential = RwLock::new(0.0);
     let sim_length = f64::cbrt(N as f64 / RHO);
     let cells_per_dimension = (f64::floor(sim_length / TARGET_CELL_LENGTH)) as i32;
     let cells_2d = cells_per_dimension.pow(2);
     let cells_3d = cells_per_dimension * cells_2d;
     let cell_length = sim_length / cells_per_dimension as f64;
 
-    let mut header = vec![-1; cells_3d as usize];
-    let mut cell_list = [0; N as usize];
+    let mut cell_header = vec![-1; cells_3d as usize];
+    let mut atom_cell_list = [-1; N as usize];
 
     for atom_idx in 0..N {
-        let x = (positions[atom_idx as usize][0] / cell_length) as i32;
-        let y = (positions[atom_idx as usize][1] / cell_length) as i32;
-        let z = (positions[atom_idx as usize][2] / cell_length) as i32;
+        let x = (pos[atom_idx as usize][0] / cell_length) as i32;
+        let y = (pos[atom_idx as usize][1] / cell_length) as i32;
+        let z = (pos[atom_idx as usize][2] / cell_length) as i32;
         let c = x * cells_2d + y * cells_per_dimension + z;
-        cell_list[atom_idx as usize] = header[c as usize];
-        header[c as usize] = atom_idx;
+        atom_cell_list[atom_idx as usize] = cell_header[c as usize];
+        cell_header[c as usize] = atom_idx;
     }
 
-    for c in 0..cells_3d {
-        net_potential +=
-            calc_forces_on_cell(c as usize, accelerations, positions, &header, &cell_list);
-    }
+    (0..cells_3d).into_par_iter().for_each(|c| {
+        let ret_val = calc_forces_on_cell(
+            c as usize,
+            accel,
+            pos,
+            &cell_header,
+            &atom_cell_list,
+            cell_interaction_indexes,
+        );
+        *net_potential.write().unwrap() += ret_val;
+    });
 
-    net_potential
+    let x = *net_potential.read().unwrap();
+    x
 }
 
 fn calc_forces_on_cell(
     cell_idx: usize,
-    accel: &mut [[f64; 3]; N as usize],
-    pos: &[[f64; 3]; N as usize],
+    accel: &[RwLock<[f64; 3]>],
+    pos: &[[f64; 3]],
     cell_header: &[i32],
     atom_cell_list: &[i32; N as usize],
+    cell_interaction_indexes: &[Vec<i32>],
 ) -> f64 {
     let mut potential = 0.0;
     let sim_length = f64::cbrt(N as f64 / RHO);
-    let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH) as i32;
-    let cells_2d = cells_per_dimension.pow(2);
-    let cell_x = cell_idx as i32 / cells_2d;
-    let remainder = cell_idx as i32 % cells_2d;
-    let cell_y = remainder / cells_per_dimension;
-    let cell_z = remainder % cells_per_dimension;
 
-    for (one, two, three) in iproduct!(
-        cell_x - 1..=cell_x + 1,
-        cell_y - 1..=cell_y + 1,
-        cell_z - 1..=cell_z + 1
-    ) {
-        let shifted_x = (one + cells_per_dimension) % cells_per_dimension;
-        let shifted_y = (two + cells_per_dimension) % cells_per_dimension;
-        let shifted_z = (three + cells_per_dimension) % cells_per_dimension;
-        let neighbor_idx = shifted_x * cells_2d + shifted_y * cells_per_dimension + shifted_z;
+    for neighbor_idx in &cell_interaction_indexes[cell_idx] {
         let mut i = cell_header[cell_idx];
         while i > -1 {
-            let mut j = cell_header[neighbor_idx as usize];
+            let mut j = cell_header[*neighbor_idx as usize];
             while j > -1 {
-                if i < j {
+
+                if i < j || cell_idx != *neighbor_idx as usize {
+
                     let dist_arr = pos[i as usize]
                         .iter()
                         .zip(pos[j as usize].iter())
@@ -202,10 +220,14 @@ fn calc_forces_on_cell(
                         let force_over_r = 24. * EPS_STAR / r2 * (2. * sor12 - sor6);
                         potential += 4. * EPS_STAR * (sor12 - sor6);
                         accel[i as usize]
+                            .write()
+                            .unwrap()
                             .iter_mut()
                             .zip(dist_arr.iter())
                             .for_each(|(accel, dist)| *accel += force_over_r * dist / MASS);
                         accel[j as usize]
+                            .write()
+                            .unwrap()
                             .iter_mut()
                             .zip(dist_arr.iter())
                             .for_each(|(accel, dist)| *accel -= force_over_r * dist / MASS);
@@ -270,7 +292,7 @@ fn write_dbg(
     }
 }
 
-fn thermostat(vel: &mut [[f64; 3]; N as usize]) {
+fn thermostat(vel: &mut [[f64; 3]]) {
     let instant_temp = vel.iter().map(|x| MASS * dot(x)).sum::<f64>() / (3 * N - 3) as f64;
     let temp_scalar = f64::sqrt(TARGET_TEMP / instant_temp);
     vel.iter_mut().flatten().for_each(|x| *x *= temp_scalar);
@@ -281,29 +303,109 @@ fn dot(arr: &[f64; 3]) -> f64 {
     arr.iter().map(|x| x * x).sum()
 }
 
-fn face_centered_cell() -> [[f64; 3]; N as usize] {
+fn face_centered_cell() -> Vec<[f64; 3]> {
     let n = f64::round(f64::cbrt(N as f64 / 4.));
-    println!("n: {n}");
     let sim_length = f64::cbrt(N as f64 / RHO);
-    let dr = sim_length / n as f64;
+    let dr = sim_length / n;
     let dro2 = dr / 2.0;
 
-    let mut count = 0;
-    let mut positions: [[f64; 3]; N as usize] = [[0.0; 3]; N as usize];
+    let mut positions = Vec::new();
 
     for i in 0..n as i32 {
         for j in 0..n as i32 {
             for k in 0..n as i32 {
-                positions[count] = [i as f64 * dr, j as f64 * dr, k as f64 * dr];
-                count += 1;
-                positions[count] = [i as f64 * dr + dro2, j as f64 * dr + dro2, k as f64 * dr];
-                count += 1;
-                positions[count] = [i as f64 * dr + dro2, j as f64 * dr, k as f64 * dr + dro2];
-                count += 1;
-                positions[count] = [i as f64 * dr, j as f64 * dr + dro2, k as f64 * dr + dro2];
-                count += 1;
+                positions.push([i as f64 * dr, j as f64 * dr, k as f64 * dr]);
+                positions.push([i as f64 * dr + dro2, j as f64 * dr + dro2, k as f64 * dr]);
+                positions.push([i as f64 * dr + dro2, j as f64 * dr, k as f64 * dr + dro2]);
+                positions.push([i as f64 * dr, j as f64 * dr + dro2, k as f64 * dr + dro2]);
             }
         }
     }
     positions
+}
+
+fn calc_cell_index(x: i32, y: i32, z: i32) -> i32 {
+    let sim_length = f64::cbrt(N as f64 / RHO);
+    let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH);
+    let cells_2d = cells_per_dimension * cells_per_dimension;
+    x * cells_2d as i32 + y * cells_per_dimension as i32 + z
+}
+
+fn calc_cell_from_index(idx: i32) -> [i32; 3] {
+    let sim_length = f64::cbrt(N as f64 / RHO);
+    let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH);
+    let cells_2d = cells_per_dimension * cells_per_dimension;
+    let mut arr = [0; 3];
+    arr[0] = idx / cells_2d as i32;
+    let remainder = idx % cells_2d as i32;
+    arr[1] = remainder / cells_per_dimension as i32;
+    arr[2] = remainder % cells_per_dimension as i32;
+    arr
+}
+
+fn shift_neighbor(x: i32, y: i32, z: i32) -> [i32; 3] {
+    let sim_length = f64::cbrt(N as f64 / RHO);
+    let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH);
+    let mut arr = [0; 3];
+    arr[0] = (x + cells_per_dimension as i32) % cells_per_dimension as i32;
+    arr[1] = (y + cells_per_dimension as i32) % cells_per_dimension as i32;
+    arr[2] = (z + cells_per_dimension as i32) % cells_per_dimension as i32;
+    arr
+}
+
+fn process_cell(x: i32, y: i32, z: i32) -> i32 {
+    let arr = shift_neighbor(x, y, z);
+    calc_cell_index(arr[0], arr[1], arr[2])
+}
+
+fn calc_cell_interactions() -> Vec<Vec<i32>> {
+    let sim_length = f64::cbrt(N as f64 / RHO);
+    let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH);
+    let cells_2d = cells_per_dimension * cells_per_dimension;
+    let cells_3d = cells_per_dimension * cells_2d;
+
+    let mut cell_interaction_indexes = Vec::new();
+
+    for i in 0..cells_3d as i32 {
+        let mut arr: Vec<i32> = Vec::new();
+        let cell = calc_cell_from_index(i);
+
+        // arr.push(process_cell(cell[0] - 1, cell[1] - 1, cell[2] - 1));
+        // arr.push(process_cell(cell[0] - 1, cell[1] - 1, cell[2]));
+        // arr.push(process_cell(cell[0] - 1, cell[1] - 1, cell[2] + 1));
+        // arr.push(process_cell(cell[0] - 1, cell[1], cell[2] - 1));
+        // arr.push(process_cell(cell[0] - 1, cell[1], cell[2]));
+        // arr.push(process_cell(cell[0] - 1, cell[1], cell[2] + 1));
+        // arr.push(process_cell(cell[0] - 1, cell[1] + 1, cell[2] - 1));
+        // arr.push(process_cell(cell[0] - 1, cell[1] + 1, cell[2]));
+        // arr.push(process_cell(cell[0] - 1, cell[1] + 1, cell[2] + 1));
+
+        arr.push(process_cell(cell[0], cell[1], cell[2]));
+        arr.push(process_cell(cell[0], cell[1], cell[2] + 1));
+        arr.push(process_cell(cell[0], cell[1] + 1, cell[2] - 1));
+        arr.push(process_cell(cell[0], cell[1] + 1, cell[2]));
+        arr.push(process_cell(cell[0], cell[1] + 1, cell[2] + 1));
+
+        // Next level above
+        arr.push(process_cell(cell[0] + 1, cell[1] - 1, cell[2] - 1));
+        arr.push(process_cell(cell[0] + 1, cell[1] - 1, cell[2]));
+        arr.push(process_cell(cell[0] + 1, cell[1] - 1, cell[2] + 1));
+        arr.push(process_cell(cell[0] + 1, cell[1], cell[2] - 1));
+        arr.push(process_cell(cell[0] + 1, cell[1], cell[2]));
+        arr.push(process_cell(cell[0] + 1, cell[1], cell[2] + 1));
+        arr.push(process_cell(cell[0] + 1, cell[1] + 1, cell[2] - 1));
+        arr.push(process_cell(cell[0] + 1, cell[1] + 1, cell[2]));
+        arr.push(process_cell(cell[0] + 1, cell[1] + 1, cell[2] + 1));
+
+        cell_interaction_indexes.push(arr);
+    }
+    cell_interaction_indexes
+}
+
+fn estimate_time_left(percentage: f64, elapsed_time: Duration) -> Option<Duration> {
+    let elapsed_secs = elapsed_time.as_secs_f64();
+    let estimated_total_secs = elapsed_secs / (percentage / 100.0);
+    let estimated_remaining_secs = estimated_total_secs - elapsed_secs;
+
+    Some(Duration::from_secs(estimated_remaining_secs as u64))
 }
