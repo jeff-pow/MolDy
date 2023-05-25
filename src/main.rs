@@ -16,9 +16,7 @@ const NUM_TIME_STEPS: i32 = 5000;
 const DT_STAR: f64 = 0.001;
 
 // Formula to find # atoms is x^3 * 4
-// 13500 is a known problem I have no idea why...
 const N: i32 = 171500;
-//const N: i32 = 500;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
 const EPS_STAR: f64 = EPSILON / KB;
@@ -185,14 +183,6 @@ fn calc_forces_on_cell(
             let mut j = cell_header[neighbor_idx as usize];
             while j > -1 {
                 if i < j {
-                    // {
-                    //     let i = i as usize;
-                    //     let j = j as usize;
-                    //     println!(
-                    //         "i: {i} {} {} {}  j: {j} {} {} {}",
-                    //         pos[i][0], pos[i][1], pos[i][2], pos[j][0], pos[j][1], pos[j][2]
-                    //     );
-                    // }
                     let dist_arr = pos[i as usize]
                         .iter()
                         .zip(pos[j as usize].iter())
