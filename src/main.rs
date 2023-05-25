@@ -1,5 +1,4 @@
 #![warn(non_snake_case)]
-use array_init::array_init;
 use rand::rngs::StdRng;
 use rand::Rng;
 use std::f32::consts::PI;
@@ -45,9 +44,9 @@ fn main() {
     let mut f = BufWriter::new(File::create("rusty.xyz").unwrap());
     let mut dbg_file = BufWriter::new(File::create("dbg.txt").unwrap());
 
-    let mut ke: Vec<f64> = Vec::new();
-    let mut pe: Vec<f64> = Vec::new();
-    let mut total_e: Vec<f64> = Vec::new();
+    let mut ke = Vec::new();
+    let mut pe = Vec::new();
+    let mut total_e = Vec::new();
 
     let mut accel = vec![[0.0; 3]; N as usize];
     let mut old_accel;
@@ -90,7 +89,7 @@ fn main() {
             .for_each(|pos| *pos += -sim_length * f64::floor(*pos / sim_length));
         old_accel = accel;
 
-        accel = Vec::from([[0.0; 3]; N as usize]);
+        accel = vec![[0.0; 3]; N as usize];
         let net_potential = calc_forces(&pos, &mut accel, &cell_interaction_indexes);
 
         vel.iter_mut()
@@ -99,7 +98,7 @@ fn main() {
             .zip(old_accel.iter().flatten())
             .for_each(|((vel, accel), old_accel)| *vel += 0.5 * (accel + old_accel) * time_step);
 
-        let total_vel_squared: f64 = vel.iter().flatten().map(|&x| x * x).sum();
+        let total_vel_squared = vel.iter().flatten().map(|&x| x * x).sum::<f64>();
 
         if time < NUM_TIME_STEPS / 2 && time % 5 == 0 {
             thermostat(&mut vel);
