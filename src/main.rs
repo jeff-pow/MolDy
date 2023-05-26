@@ -6,18 +6,19 @@ use rayon::prelude::*;
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::{BufWriter, Write};
-use std::sync::{Arc, RwLock};
+use std::sync::mpsc::{Receiver, Sender};
+use std::sync::{mpsc, Arc, RwLock};
+use std::thread;
 use std::time::{Duration, Instant};
-
 
 const KB: f64 = 1.3806e-23;
 const NA: f64 = 6.022e23;
 
-const NUM_TIME_STEPS: i32 = 50;
+const NUM_TIME_STEPS: i32 = 5000;
 const DT_STAR: f64 = 0.001;
 
 // Formula to find # atoms is x^3 * 4
-const N: i32 = 13500;
+const N: i32 = 4000;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
 const EPS_STAR: f64 = EPSILON / KB;
@@ -43,7 +44,6 @@ fn main() {
     println!("{} cell length", cell_length);
     println!();
 
-    let mut f = BufWriter::new(File::create("rusty.xyz").unwrap());
     let mut _dbg_file = BufWriter::new(File::create("dbg.txt").unwrap());
 
     let mut ke = Vec::new();
@@ -51,7 +51,6 @@ fn main() {
     let mut total_e = Vec::new();
 
     let mut accel = Arc::new((0..N).map(|_| RwLock::from([0.0; 3])).collect::<Vec<_>>());
-
     let mut pos = face_centered_cell();
     let mut rng: StdRng = rand::SeedableRng::from_seed([3; 32]);
     let mut vel = (0..N)
@@ -67,6 +66,21 @@ fn main() {
 
     thermostat(&mut vel);
 
+    #[allow(clippy::type_complexity)]
+    let (sender, reciever): (
+        Sender<(Box<Vec<[f64; 3]>>, i32)>,
+        Receiver<(Box<Vec<[f64; 3]>>, i32)>,
+    ) = mpsc::channel();
+    let io_thread = thread::spawn(move || {
+        let mut thread_file = BufWriter::new(File::create("thread-file.xyz").unwrap());
+        for entry in reciever {
+            write_positions(&entry.0, &mut thread_file, entry.1);
+            if entry.1 == NUM_TIME_STEPS - 1 {
+                break
+            }
+        }
+    });
+
     let time_step = DT_STAR * f64::sqrt(MASS * SIGMA * SIGMA / EPS_STAR);
     let start = Instant::now();
     for time in 0..NUM_TIME_STEPS {
@@ -74,19 +88,20 @@ fn main() {
         let duration = start.elapsed();
         let time_left = estimate_time_left(progress, duration).unwrap();
         print!("\r                                                   ");
-        print!("\r{:.1}% -- {:?} elapsed -- {:?} left", progress, format!("{:.1}", duration.as_secs_f64()), time_left);
+        print!(
+            "\r{:.1}% -- {:?} elapsed -- {:?} left",
+            progress,
+            format!("{:.1}", duration.as_secs_f64()),
+            time_left
+        );
         std::io::stdout().flush().unwrap();
 
-        write_positions(&pos, &mut f, time);
+         sender.send((Box::new(pos.clone()), time)).unwrap();
 
         let old_accel = accel
             .iter()
-            .map(|lock| {
-                let guard = lock.read().unwrap();
-                *guard
-            })
+            .map(|lock| *lock.read().unwrap())
             .collect::<Vec<_>>();
-
         pos.iter_mut()
             .flatten()
             .zip(vel.iter().flatten())
@@ -97,7 +112,6 @@ fn main() {
             });
 
         accel = Arc::new((0..N).map(|_| RwLock::from([0.0; 3])).collect::<Vec<_>>());
-
         let net_potential = calc_forces(&pos, &accel, &cell_interaction_indexes);
 
         vel.iter_mut()
@@ -106,7 +120,7 @@ fn main() {
             .zip(old_accel.iter().flatten())
             .for_each(|((vel, accel), old_accel)| *vel += 0.5 * (accel + old_accel) * time_step);
 
-        let total_vel_squared = vel.iter().flatten().map(|&x| x * x).sum::<f64>();
+        let total_vel_squared = vel.iter().flatten().map(|x| x * x).sum::<f64>();
 
         if time < NUM_TIME_STEPS / 2 && time % 5 == 0 {
             thermostat(&mut vel);
@@ -132,6 +146,9 @@ fn main() {
     let pestar = ((avg_pe + long_range_potential_corrections) / N as f64) / EPS_STAR;
     println!("Avg PE: {avg_pe}");
     println!("Reduced potential: {}", pestar);
+
+    io_thread.join().unwrap();
+    println!("Total time elapsed: {:?}", start.elapsed());
 }
 
 fn calc_forces(
