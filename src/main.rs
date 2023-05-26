@@ -18,7 +18,7 @@ const NUM_TIME_STEPS: i32 = 5000;
 const DT_STAR: f64 = 0.001;
 
 // Formula to find # atoms is x^3 * 4
-const N: i32 = 171500;
+const N: i32 = 4000;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
 const EPS_STAR: f64 = EPSILON / KB;
