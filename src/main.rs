@@ -51,7 +51,9 @@ fn main() {
     let mut pe = Vec::new();
     let mut total_e = Vec::new();
 
+
     let mut accel = Arc::new((0..N).map(|_| RwLock::from([0.0; 3])).collect::<Vec<_>>());
+
     let mut pos = face_centered_cell();
     let mut rng: StdRng = rand::SeedableRng::from_seed([3; 32]);
     let mut vel = (0..N)
@@ -79,6 +81,7 @@ fn main() {
         write_positions(&pos, &mut f, time);
         //write_dbg(&pos, &vel, &accel, &old_accel, &mut dbg_file, time);
 
+
         let old_accel = accel
             .iter()
             .map(|lock| {
@@ -91,18 +94,22 @@ fn main() {
             .flatten()
             .zip(vel.iter().flatten())
             .zip(accel.iter().flat_map(|lock| *lock.read().unwrap()))
+
             .for_each(|((pos, vel), accel)| {
-                *pos += vel * time_step + 0.5 * accel * time_step * time_step
+                *pos += vel * time_step + 0.5 * accel * time_step * time_step;
+                *pos -= sim_length * f64::floor(*pos / sim_length);
             });
         pos.iter_mut()
             .flatten()
             .for_each(|pos| *pos += -sim_length * f64::floor(*pos / sim_length));
 
         accel = Arc::new((0..N).map(|_| RwLock::from([0.0; 3])).collect::<Vec<_>>());
+
         let net_potential = calc_forces(&pos, &accel, &cell_interaction_indexes);
 
         vel.iter_mut()
             .flatten()
+
             .zip(
                 accel
                     .iter()
@@ -112,6 +119,7 @@ fn main() {
                     })
                     .flatten(),
             )
+
             .zip(old_accel.iter().flatten())
             .for_each(|((vel, accel), old_accel)| *vel += 0.5 * (accel + old_accel) * time_step);
 
@@ -155,33 +163,37 @@ fn calc_forces(
     let cells_3d = cells_per_dimension * cells_2d;
     let cell_length = sim_length / cells_per_dimension as f64;
 
-    let mut header = vec![-1; cells_3d as usize];
-    let mut cell_list = [-1; N as usize];
+    let mut cell_header = vec![-1; cells_3d as usize];
+    let mut atom_cell_list = [-1; N as usize];
 
     for atom_idx in 0..N {
         let x = (pos[atom_idx as usize][0] / cell_length) as i32;
         let y = (pos[atom_idx as usize][1] / cell_length) as i32;
         let z = (pos[atom_idx as usize][2] / cell_length) as i32;
         let c = x * cells_2d + y * cells_per_dimension + z;
-        cell_list[atom_idx as usize] = header[c as usize];
-        header[c as usize] = atom_idx;
+        atom_cell_list[atom_idx as usize] = cell_header[c as usize];
+        cell_header[c as usize] = atom_idx;
     }
 
     (0..cells_3d).into_par_iter().for_each(|c| {
+
         let x = calc_forces_on_cell(
+
             c as usize,
             accel,
             pos,
-            &header,
-            &cell_list,
+            &cell_header,
+            &atom_cell_list,
             cell_interaction_indexes,
         );
+
         let mut lock = net_potential.write().unwrap();
         *lock += x
     });
 
     let net_potential = net_potential.read().unwrap();
     *net_potential
+
 }
 
 fn calc_forces_on_cell(
@@ -249,6 +261,7 @@ fn write_positions(pos: &[[f64; 3]], file: &mut BufWriter<File>, time: i32) {
     }
 }
 
+#[allow(dead_code)]
 fn write_dbg(
     pos: &[[f64; 3]],
     vel: &[[f64; 3]],
@@ -305,7 +318,6 @@ fn dot(arr: &[f64; 3]) -> f64 {
 
 fn face_centered_cell() -> Vec<[f64; 3]> {
     let n = f64::round(f64::cbrt(N as f64 / 4.));
-    println!("n: {n}");
     let sim_length = f64::cbrt(N as f64 / RHO);
     let dr = sim_length / n;
     let dro2 = dr / 2.0;
