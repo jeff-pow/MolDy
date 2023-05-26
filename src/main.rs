@@ -9,16 +9,15 @@ use std::io::{BufWriter, Write};
 use std::sync::{Arc, RwLock};
 use std::time::{Duration, Instant};
 
-//mod bak;
 
 const KB: f64 = 1.3806e-23;
 const NA: f64 = 6.022e23;
 
-const NUM_TIME_STEPS: i32 = 5000;
+const NUM_TIME_STEPS: i32 = 50;
 const DT_STAR: f64 = 0.001;
 
 // Formula to find # atoms is x^3 * 4
-const N: i32 = 4000;
+const N: i32 = 13500;
 const SIGMA: f64 = 3.405;
 const EPSILON: f64 = 1.654e-21;
 const EPS_STAR: f64 = EPSILON / KB;
@@ -51,7 +50,6 @@ fn main() {
     let mut pe = Vec::new();
     let mut total_e = Vec::new();
 
-
     let mut accel = Arc::new((0..N).map(|_| RwLock::from([0.0; 3])).collect::<Vec<_>>());
 
     let mut pos = face_centered_cell();
@@ -75,12 +73,11 @@ fn main() {
         let progress = (time as f64 / NUM_TIME_STEPS as f64) * 100.;
         let duration = start.elapsed();
         let time_left = estimate_time_left(progress, duration).unwrap();
-        print!("\r{:.1}% -- {:?} left                ", progress, time_left);
+        print!("\r                                                   ");
+        print!("\r{:.1}% -- {:?} elapsed -- {:?} left", progress, format!("{:.1}", duration.as_secs_f64()), time_left);
         std::io::stdout().flush().unwrap();
 
         write_positions(&pos, &mut f, time);
-        //write_dbg(&pos, &vel, &accel, &old_accel, &mut dbg_file, time);
-
 
         let old_accel = accel
             .iter()
@@ -94,14 +91,10 @@ fn main() {
             .flatten()
             .zip(vel.iter().flatten())
             .zip(accel.iter().flat_map(|lock| *lock.read().unwrap()))
-
             .for_each(|((pos, vel), accel)| {
                 *pos += vel * time_step + 0.5 * accel * time_step * time_step;
                 *pos -= sim_length * f64::floor(*pos / sim_length);
             });
-        pos.iter_mut()
-            .flatten()
-            .for_each(|pos| *pos += -sim_length * f64::floor(*pos / sim_length));
 
         accel = Arc::new((0..N).map(|_| RwLock::from([0.0; 3])).collect::<Vec<_>>());
 
@@ -109,17 +102,7 @@ fn main() {
 
         vel.iter_mut()
             .flatten()
-
-            .zip(
-                accel
-                    .iter()
-                    .map(|lock| {
-                        let guard = lock.read().unwrap();
-                        *guard
-                    })
-                    .flatten(),
-            )
-
+            .zip(accel.iter().flat_map(|lock| *lock.read().unwrap()))
             .zip(old_accel.iter().flatten())
             .for_each(|((vel, accel), old_accel)| *vel += 0.5 * (accel + old_accel) * time_step);
 
@@ -176,9 +159,7 @@ fn calc_forces(
     }
 
     (0..cells_3d).into_par_iter().for_each(|c| {
-
         let x = calc_forces_on_cell(
-
             c as usize,
             accel,
             pos,
@@ -193,7 +174,6 @@ fn calc_forces(
 
     let net_potential = net_potential.read().unwrap();
     *net_potential
-
 }
 
 fn calc_forces_on_cell(
