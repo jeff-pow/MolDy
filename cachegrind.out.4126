@@ -1,0 +1,1891 @@
+desc: I1 cache:         32768 B, 64 B, 8-way associative
+desc: D1 cache:         49152 B, 64 B, 12-way associative
+desc: LL cache:         12582912 B, 64 B, 24-way associative
+cmd: ./target/release/mol_dy
+events: Ir I1mr ILmr Dr D1mr DLmr Dw D1mw DLmw 
+fl=/home/jeff/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.8/src/linux_android.rs
+fn=<rand_core::os::OsRng as rand_core::RngCore>::try_fill_bytes
+0 316 1 1 126 124 0 0 0 0
+19 126 0 0 0 0 0 0 0 0
+30 2 0 0 0 0 0 0 0 0
+46 384 1 1 1 1 1 64 0 0
+fl=/home/jeff/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.8/src/util.rs
+fn=<rand_core::os::OsRng as rand_core::RngCore>::try_fill_bytes
+45 126 0 0 0 0 0 0 0 0
+fl=/home/jeff/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.8/src/util_libc.rs
+fn=<rand_core::os::OsRng as rand_core::RngCore>::try_fill_bytes
+65 63 0 0 0 0 0 0 0 0
+67 126 0 0 0 0 0 0 0 0
+fl=/home/jeff/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ppv-lite86-0.2.17/src/x86_64/mod.rs
+fn=rand::rngs::adapter::reseeding::ReseedingCore<R,Rsdr>::reseed_and_generate
+346 62 0 0 0 0 0 0 0 0
+347 248 1 1 0 0 0 62 0 0
+fn=rand_chacha::guts::init_chacha::impl_avx
+340 126 0 0 63 0 0 0 0 0
+fn=rand_chacha::guts::refill_wide
+250 80395 1 1 0 0 0 32158 0 0
+282 16079 0 0 0 0 0 0 0 0
+283 96474 1 1 32158 0 0 0 0 0
+fn=rand_chacha::guts::refill_wide::impl_avx2
+259 16079 0 0 16079 0 0 0 0 0
+fn=std::sys::common::thread_local::fast_local::Key<T>::try_initialize
+346 1 0 0 0 0 0 0 0 0
+347 4 0 0 0 0 0 1 0 0
+fl=/home/jeff/.cargo/registry/src/index.crates.io-6f17d22bba15001f/rand-0.8.5/src/distributions/float.rs
+fn=mol_dy::main
+102 514500 0 0 0 0 0 0 0 0
+fl=/home/jeff/.cargo/registry/src/index.crates.io-6f17d22bba15001f/rand-0.8.5/src/distributions/uniform.rs
+fn=mol_dy::main
+942 514500 0 0 0 0 0 0 0 0
+946 514500 0 0 0 0 0 0 0 0
+950 1029000 0 0 0 0 0 0 0 0
+953 514500 0 0 0 0 0 0 0 0
+fl=/home/jeff/.cargo/registry/src/index.crates.io-6f17d22bba15001f/rand-0.8.5/src/distributions/utils.rs
+fn=mol_dy::main
+315 514500 0 0 0 0 0 0 0 0
+fl=/home/jeff/.cargo/registry/src/index.crates.io-6f17d22bba15001f/rand-0.8.5/src/rngs/adapter/reseeding.rs
+fn=mol_dy::main
+0 16017 0 0 0 0 0 0 0 0
+175 96288 0 0 32096 0 0 0 0 0
+179 186 0 0 0 0 0 62 0 0
+182 32034 1 1 0 0 0 16017 0 0
+fn=rand::rngs::adapter::reseeding::ReseedingCore<R,Rsdr>::reseed_and_generate
+222 372 1 1 186 0 0 186 0 0
+241 496 1 1 0 0 0 248 0 0
+257 124 0 0 0 0 0 62 0 0
+259 124 0 0 62 0 0 62 0 0
+261 372 1 1 310 0 0 0 0 0
+fn=std::sys::common::thread_local::fast_local::Key<T>::try_initialize
+102 8 1 1 4 0 0 4 0 0
+fn=std::sys_common::once::futex::Once::call
+0 1 1 1 0 0 0 0 0 0
+321 5 0 0 1 1 1 2 0 0
+326 2 0 0 0 0 0 0 0 0
+fl=/home/jeff/.cargo/registry/src/index.crates.io-6f17d22bba15001f/rand_chacha-0.3.1/src/guts.rs
+fn=mol_dy::main
+0 16017 0 0 0 0 0 0 0 0
+85 48051 1 1 0 0 0 16017 0 0
+fn=rand::rngs::adapter::reseeding::ReseedingCore<R,Rsdr>::reseed_and_generate
+85 186 0 0 0 0 0 62 0 0
+fn=rand_chacha::guts::init_chacha::impl_avx
+243 63 0 0 63 63 1 0 0 0
+248 189 0 0 0 0 0 189 1 0
+fn=rand_chacha::guts::refill_wide::impl_avx2
+64 192948 0 0 0 0 0 0 0 0
+65 192948 0 0 0 0 0 0 0 0
+78 32158 0 0 32158 0 0 0 0 0
+123 16079 0 0 0 0 0 0 0 0
+125 16079 0 0 0 0 0 0 0 0
+127 16079 0 0 0 0 0 0 0 0
+129 16079 1 1 16079 0 0 0 0 0
+130 16079 0 0 16079 0 0 0 0 0
+150 32158 0 0 0 0 0 0 0 0
+161 16079 0 0 0 0 0 16079 0 0
+fl=/home/jeff/.cargo/registry/src/index.crates.io-6f17d22bba15001f/rand_core-0.6.4/src/block.rs
+fn=mol_dy::main
+0 391299 2 2 375158 0 0 0 0 0
+177 16079 3 3 0 0 0 16079 0 0
+200 1045079 0 0 514500 0 0 0 0 0
+205 1029000 1 1 514500 0 0 0 0 0
+206 1029000 3 3 0 0 0 0 0 0
+207 996842 0 0 0 0 0 498421 0 0
+210 16079 0 0 0 0 0 0 0 0
+fn=std::sys::common::thread_local::fast_local::Key<T>::try_initialize
+147 6 0 0 3 0 0 3 0 0
+fl=/home/jeff/.cargo/registry/src/index.crates.io-6f17d22bba15001f/rand_core-0.6.4/src/lib.rs
+fn=rand::rngs::adapter::reseeding::ReseedingCore<R,Rsdr>::reseed_and_generate
+392 62 0 0 0 0 0 0 0 0
+393 310 1 1 124 0 0 124 62 0
+442 62 0 0 0 0 0 62 0 0
+fn=std::sys::common::thread_local::fast_local::Key<T>::try_initialize
+392 3 0 0 0 0 0 1 0 0
+393 5 0 0 2 0 0 2 0 0
+fl=/home/jeff/.cargo/registry/src/index.crates.io-6f17d22bba15001f/rand_core-0.6.4/src/os.rs
+fn=<rand_core::os::OsRng as rand_core::RngCore>::try_fill_bytes
+67 504 1 1 0 0 0 441 62 0
+70 567 1 1 441 0 0 0 0 0
+fl=/home/jeff/old/src/main.rs
+fn=mol_dy::main
+0 6768376159 7 7 6049730894 317 311 360179640 1 1
+35 8 2 2 1 1 1 6 0 0
+37 1 0 0 1 0 0 0 0 0
+38 2 1 1 0 0 0 1 0 0
+39 2 0 0 0 0 0 0 0 0
+40 3 0 0 0 0 0 1 0 0
+41 4 0 0 0 0 0 3 0 0
+42 5 1 1 0 0 0 3 0 0
+43 3 0 0 0 0 0 3 0 0
+44 3 0 0 0 0 0 3 0 0
+56 514500 0 0 0 0 0 514500 171500 113386
+66 100 0 0 0 0 0 100 10 0
+67 500 0 0 0 0 0 300 99 99
+68 600 1 1 300 99 89 0 0 0
+69 247 1 1 57 19 19 76 0 0
+70 19 0 0 19 0 0 0 0 0
+74 100 0 0 100 0 0 0 0 0
+80 171500000 33 33 51450000 8575100 8575100 34300000 0 0
+81 188650000 1 1 85750000 8575200 8575200 34300000 0 0
+82 257250000 2 2 137200000 100 100 51450000 0 0
+83 34300000 5 5 0 0 0 34300000 8575000 8575000
+96 85750000 1 1 34300000 8575100 8207500 34300000 0 0
+97 154350000 1 1 68600000 17150000 16297290 0 0 0
+98 102900000 0 0 0 0 0 0 0 0
+102 350 0 0 100 100 100 0 0 0
+106 200 0 0 0 0 0 0 0 0
+107 49 0 0 49 49 49 0 0 0
+111 49 0 0 0 0 0 0 0 0
+116 2 1 1 2 0 0 0 0 0
+119 9 2 2 3 2 2 1 1 1
+121 3 0 0 2 1 1 0 0 0
+124 2 1 1 1 0 0 1 0 0
+126 2 0 0 1 0 0 0 0 0
+127 4 0 0 3 1 1 1 0 0
+128 4 1 1 0 0 0 3 1 1
+129 5 1 1 1 0 0 3 0 0
+130 4 0 0 0 0 0 3 0 0
+131 9 1 1 8 2 2 0 0 0
+141 5272800 0 0 0 0 0 0 0 0
+145 3515200 0 0 0 0 0 0 0 0
+146 98425600 0 0 24606400 2197848 2197377 0 0 0
+150 3528531798 0 0 781838080 0 0 0 0 0
+154 20320832529 101 101 11289351405 126354857 24443078 6773610843 100 100
+155 20320832529 0 0 2257870281 105 100 0 0 0
+156 20320832529 0 0 11289351405 0 0 2257870281 0 0
+159 6773610843 0 0 2257870281 100 100 0 0 0
+160 716808482 0 0 358404241 0 0 0 0 0
+161 1075212723 0 0 0 0 0 0 0 0
+162 716808482 0 0 0 0 0 0 0 0
+163 2150425446 1 1 358404241 100 100 0 0 0
+164 716808482 0 0 358404241 0 0 0 0 0
+166 6451276338 101 101 1433616964 0 0 1075212723 0 0
+167 3584042410 0 0 716808482 13955 223 0 0 0
+168 4300850892 1 1 1792021205 11864128 2376980 1075212723 0 0
+183 100 0 0 100 0 0 0 0 0
+193 600 0 0 200 100 100 0 0 0
+198 17150100 1 1 17150000 8575000 6873555 0 0 0
+199 240100000 1 1 0 0 0 0 0 0
+200 171500000 1 1 68600000 17150402 15690084 0 0 0
+202 120050000 1 1 0 0 0 0 0 0
+204 17150000 0 0 0 0 0 0 0 0
+208 1757600 0 0 1757600 0 0 0 0 0
+215 600 1 1 0 0 0 400 0 0
+217 137200000 2 2 0 0 0 102900000 0 0
+235 17576 1 1 17576 0 0 0 0 0
+236 35152 0 0 0 0 0 0 0 0
+238 228488 0 0 17576 0 0 0 0 0
+240 140608 1 1 0 0 0 0 0 0
+241 87880 0 0 0 0 0 0 0 0
+262 1 0 0 1 0 0 0 0 0
+263 2 0 0 0 0 0 0 0 0
+264 1 0 0 0 0 0 0 0 0
+268 5 1 1 2 0 0 0 0 0
+272 70304 1 1 0 0 0 35152 0 0
+273 140608 1 1 0 0 0 70304 8 2
+274 140608 1 1 35152 0 0 52728 0 0
+275 35152 0 0 0 0 0 17576 0 0
+276 35152 0 0 0 0 0 17576 0 0
+279 123032 1 1 35152 0 0 35152 0 0
+280 52728 0 0 17576 0 0 17576 0 0
+281 70304 0 0 17576 0 0 17576 0 0
+282 35152 1 1 0 0 0 17576 0 0
+283 35152 0 0 0 0 0 17576 0 0
+284 35152 0 0 0 0 0 17576 0 0
+285 35152 0 0 0 0 0 17576 0 0
+286 35152 0 0 0 0 0 17576 0 0
+287 35152 0 0 0 0 0 17576 0 0
+291 2 0 0 1 0 0 0 0 0
+297 7546000 1 1 3773000 1886500 1130986 0 0 0
+299 11 0 0 11 11 10 0 0 0
+300 21 0 0 10 0 0 0 0 0
+303 9432545 2 2 1886500 1886500 0 3773000 0 0
+310 18072394748 2 2 2257870281 0 0 2257870281 0 0
+314 7 0 0 2 0 0 1 0 0
+351 3 1 1 2 0 0 1 0 0
+fn=mol_dy::process_cell
+0 984256 1 1 738192 0 0 0 0 0
+228 246064 0 0 246064 0 0 0 0 0
+229 492128 0 0 0 0 0 0 0 0
+230 3444896 1 1 0 0 0 0 0 0
+247 246064 1 1 246064 0 0 0 0 0
+249 4429152 0 0 492128 0 0 0 0 0
+250 1968512 1 1 0 0 0 0 0 0
+251 1968512 0 0 0 0 0 0 0 0
+255 1722448 1 1 246064 0 0 738192 0 0
+258 984256 0 0 984256 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/alloc/src/alloc.rs
+fn=alloc::raw_vec::finish_grow
+171 3550562 1 1 0 0 0 0 0 0
+196 6042020 0 0 0 0 0 0 0 0
+fn=alloc::sync::Arc<T>::drop_slow
+245 2 0 0 1 0 0 0 0 0
+fn=mol_dy::main
+0 1757600 0 0 0 0 0 0 0 0
+171 52728000 0 0 0 0 0 0 0 0
+fn=std::sys::common::thread_local::fast_local::Key<T>::try_initialize
+324 2 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/alloc/src/borrow.rs
+fn=mol_dy::main
+88 52728000 0 0 52728000 3652605 684696 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/alloc/src/boxed.rs
+fn=std::sys::common::thread_local::fast_local::Key<T>::try_initialize
+217 31 3 3 4 0 0 26 5 5
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/alloc/src/ffi/c_str.rs
+fn=<&str as alloc::ffi::c_str::CString::new::SpecNewImpl>::spec_new_impl
+294 7 1 1 0 0 0 6 0 0
+305 7 1 1 0 0 0 6 0 0
+307 8 1 1 7 0 0 0 0 0
+348 2 0 0 2 0 0 0 0 0
+fn=alloc::sync::Arc<T>::drop_slow
+703 1 0 0 0 0 0 1 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/alloc/src/raw_vec.rs
+fn=<&str as alloc::ffi::c_str::CString::new::SpecNewImpl>::spec_new_impl
+0 6 1 1 0 0 0 0 0 0
+175 1 0 0 0 0 0 0 0 0
+187 2 0 0 0 0 0 0 0 0
+342 1 0 0 0 0 0 0 0 0
+365 1 0 0 0 0 0 0 0 0
+fn=<std::io::Write::write_fmt::Adapter<T> as core::fmt::Write>::write_str
+231 222726897 0 0 222726897 0 0 0 0 0
+fn=<std::io::stdio::StdoutLock as std::io::Write>::write_all
+231 392 0 0 392 0 0 0 0 0
+fn=alloc::raw_vec::RawVec<T,A>::reserve_for_push
+0 14388873 2 2 0 0 0 0 0 0
+240 9592582 0 0 0 0 0 0 0 0
+241 1775281 3 3 0 0 0 1775281 0 0
+252 12084040 0 0 0 0 0 9063030 0 0
+301 14388873 3 3 0 0 0 9592582 413 5
+303 19185164 1 1 14388873 633 35 0 0 0
+372 4796291 75 75 0 0 0 4796291 10792 2434
+373 4796291 0 0 0 0 0 4796291 54 0
+394 4796291 0 0 0 0 0 0 0 0
+398 9592582 0 0 4796291 0 0 0 0 0
+404 12613592 0 0 3021010 1494 4 4796291 413 105
+fn=alloc::raw_vec::finish_grow
+0 20960445 2 2 4796291 1692 101 11367863 102 101
+454 43166619 1 1 0 0 0 33574037 0 0
+467 12613592 1 1 7817301 0 0 0 0 0
+479 38370328 0 0 33574037 631 39 0 0 0
+fn=mol_dy::main
+0 112675627 4 4 28310827 149 149 1757600 100 100
+170 59758400 95 95 3515200 0 0 1757600 100 100
+175 26364000 0 0 0 0 0 0 0 0
+187 52728002 1 1 0 0 0 0 0 0
+223 17299895 3 3 17299895 6453 262 0 0 0
+231 130755 1 1 130755 0 0 0 0 0
+240 5308366 2 2 1775282 665230 281665 0 0 0
+fn=std::io::buffered::bufwriter::BufWriter<W>::write_all_cold
+231 267597 0 0 267597 0 0 0 0 0
+fn=std::sys_common::once::futex::Once::call
+187 2 0 0 0 0 0 0 0 0
+240 2 0 0 1 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/alloc/src/rc.rs
+fn=alloc::sync::Arc<T>::drop_slow
+2238 1 0 0 0 0 0 0 0 0
+fn=mol_dy::main
+1607 1 0 0 0 0 0 0 0 0
+2643 1 0 0 0 0 0 0 0 0
+fn=std::sys::common::thread_local::fast_local::destroy_value
+1607 1 0 0 0 0 0 0 0 0
+1615 1 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/alloc/src/sync.rs
+fn=alloc::sync::Arc<T>::drop_slow
+1260 2 1 1 0 0 0 1 0 0
+2398 1 0 0 0 0 0 0 0 0
+2400 1 0 0 0 0 0 0 0 0
+fn=std::sys_common::thread_info::THREAD_INFO::__getit::destroy
+1864 1 0 0 0 0 0 0 0 0
+1899 1 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/alloc/src/vec/drain.rs
+fn=std::io::buffered::bufwriter::BufWriter<W>::flush_buf
+0 240824 0 0 0 0 0 0 0 0
+181 120411 0 0 0 0 0 0 0 0
+239 120411 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/alloc/src/vec/mod.rs
+fn=<&str as alloc::ffi::c_str::CString::new::SpecNewImpl>::spec_new_impl
+1041 2 0 0 0 0 0 0 0 0
+1833 1 0 0 0 0 0 0 0 0
+fn=<std::io::Write::write_fmt::Adapter<T> as core::fmt::Write>::write_str
+0 222726897 0 0 0 0 0 0 0 0
+1365 222579584 0 0 0 0 0 222579584 0 0
+2050 222726897 0 0 222726897 0 0 0 0 0
+fn=<std::io::stdio::StdoutLock as std::io::Write>::write_all
+1365 1302 0 0 252 0 0 392 0 0
+2050 126 0 0 126 0 0 0 0 0
+fn=mol_dy::main
+0 3628582 1 1 35255 3 0 1775176 0 0
+421 278871 4 4 100 0 0 35363 103 3
+1827 55861269 2 2 36135921 1285771 202268 42924 0 0
+1828 23873129 2 2 14226385 683 74 4796308 300 0
+1831 9539822 1 1 4796291 39 0 0 0 0
+1833 39195478 3 3 492128 0 0 19360463 0 0
+2050 1 0 0 1 0 0 0 0 0
+2625 1757600 0 0 1757600 659248 659200 0 0 0
+fn=std::io::buffered::bufwriter::BufWriter<W>::flush_buf
+1365 120411 0 0 0 0 0 120411 0 0
+2050 127 0 0 127 0 0 0 0 0
+fn=std::io::buffered::bufwriter::BufWriter<W>::write_all_cold
+0 147313 0 0 147313 0 0 0 0 0
+1365 441939 0 0 0 0 0 147313 0 0
+2050 147313 0 0 147313 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/../../stdarch/crates/core_arch/src/macros.rs
+fn=rand_chacha::guts::refill_wide::impl_avx2
+0 96474 0 0 32158 1 1 0 0 0
+69 112553 1 1 48237 1 1 16079 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/../../stdarch/crates/core_arch/src/x86/avx.rs
+fn=rand_chacha::guts::refill_wide::impl_avx2
+998 16079 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/../../stdarch/crates/core_arch/src/x86/avx2.rs
+fn=rand_chacha::guts::refill_wide::impl_avx2
+81 1543584 2 2 0 0 0 0 0 0
+894 128632 0 0 0 0 0 0 0 0
+2155 2315376 2 2 0 0 0 0 0 0
+2341 1929480 2 2 0 0 0 0 0 0
+2381 385896 1 1 0 0 0 0 0 0
+3531 578844 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/../../stdarch/crates/core_arch/src/x86/cpuid.rs
+fn=std_detect::detect::cache::detect_and_initialize
+77 33 1 1 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/../../stdarch/crates/core_arch/src/x86/mod.rs
+fn=rand_chacha::guts::refill_wide::impl_avx2
+429 192948 0 0 0 0 0 0 0 0
+459 578844 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/../../stdarch/crates/core_arch/src/x86/sse2.rs
+fn=rand_chacha::guts::refill_wide::impl_avx2
+102 273343 1 1 32158 1 1 0 0 0
+1251 257264 2 2 0 0 0 257264 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/../../stdarch/crates/core_arch/src/x86/sse41.rs
+fn=rand_chacha::guts::refill_wide::impl_avx2
+272 128632 2 2 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/../../stdarch/crates/core_arch/src/x86/xsave.rs
+fn=core::core_arch::x86::xsave::_xgetbv
+90 4 1 1 0 0 0 0 0 0
+91 1 0 0 1 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/alloc/layout.rs
+fn=<&str as alloc::ffi::c_str::CString::new::SpecNewImpl>::spec_new_impl
+447 1 0 0 0 0 0 0 0 0
+fn=alloc::raw_vec::RawVec<T,A>::reserve_for_push
+447 9594030 0 0 0 0 0 0 0 0
+fn=mol_dy::main
+447 105456000 6 6 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/array/equality.rs
+fn=std_detect::detect::cache::detect_and_initialize
+151 6 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/array/mod.rs
+fn=rand::rngs::adapter::reseeding::ReseedingCore<R,Rsdr>::reseed_and_generate
+0 62 0 0 0 0 0 0 0 0
+436 186 0 0 0 0 0 124 62 0
+fn=std::sys::common::thread_local::fast_local::Key<T>::try_initialize
+436 4 1 1 0 0 0 2 1 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/cell.rs
+fn=<std::io::stdio::StdoutLock as std::io::Write>::write_all
+0 798 96 96 0 0 0 0 0 0
+1046 266 0 0 0 0 0 0 0 0
+1740 532 0 0 266 0 0 0 0 0
+fn=std::sys::common::thread_local::fast_local::Key<T>::try_initialize
+500 2 1 1 1 0 0 0 0 0
+fn=std::sys_common::once::futex::Once::call
+1740 2 0 0 1 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/cmp.rs
+fn=alloc::raw_vec::RawVec<T,A>::reserve_for_push
+0 43166619 7 7 0 0 0 0 0 0
+fn=core::fmt::float::float_to_decimal_common_shortest
+0 38769570 0 0 0 0 0 222980 0 0
+1363 295392 0 0 0 0 0 0 0 0
+1378 94958228 93 93 22655077 0 0 0 0 0
+fn=core::num::bignum::Big32x40::mul_pow2
+1363 6134003 1 1 0 0 0 0 0 0
+fn=mol_dy::main
+0 1800575 0 0 42975 0 0 1757600 0 0
+1363 7072659847 1 1 4713324732 103 100 200 100 100
+fn=rand_chacha::guts::refill_wide::impl_avx2
+1363 96474 0 0 0 0 0 0 0 0
+fn=std::io::buffered::bufwriter::BufWriter<W>::flush_buf
+0 481392 0 0 120285 0 0 0 0 0
+fn=std::sys::unix::time::Timespec::sub_timespec
+1118 800 1 1 800 0 0 0 0 0
+1378 400 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/fmt/float.rs
+fn=core::fmt::float::<impl core::fmt::Display for f64>::fmt
+89 102900012 0 0 51450006 0 0 0 0 0
+93 102900012 0 0 0 0 0 0 0 0
+208 51450006 1 1 0 0 0 0 0 0
+209 51450006 0 0 51450006 25725000 25139677 0 0 0
+fn=core::fmt::float::float_to_decimal_common_shortest
+55 411600048 1 1 0 0 0 308700036 0 0
+76 51450006 0 0 0 0 0 51450006 1 1
+77 411600048 0 0 360150042 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/fmt/mod.rs
+fn=core::fmt::Formatter::pad_formatted_parts
+1422 463050054 1 1 0 0 0 308700036 2 1
+1423 102900012 0 0 51450006 0 0 0 0 0
+1461 514500060 1 1 411600048 0 0 0 0 0
+fn=core::fmt::Formatter::pad_integral
+0 6080 1 1 2240 200 200 320 0 0
+1246 3840 1 1 0 0 0 1920 99 99
+1250 640 0 0 0 0 0 0 0 0
+1253 960 0 0 320 0 0 0 0 0
+1258 320 0 0 0 0 0 0 0 0
+1275 640 0 0 320 0 0 0 0 0
+1279 1280 3 3 640 0 0 0 0 0
+1738 1280 0 0 0 0 0 0 0 0
+1795 320 0 0 0 0 0 0 0 0
+fn=core::fmt::Formatter::pad_integral::write_prefix
+0 320 0 0 0 0 0 0 0 0
+1267 2880 101 101 0 0 0 1600 99 99
+1268 640 0 0 0 0 0 0 0 0
+1271 640 2 2 0 0 0 0 0 0
+1272 1920 0 0 1600 0 0 0 0 0
+fn=core::fmt::Formatter::write_formatted_parts
+0 205785322 1 1 0 0 0 0 0 0
+1468 514500060 2 2 0 0 0 308700036 0 0
+1474 461922879 0 0 307948586 1 0 153974293 0 0
+1477 102900012 0 0 51450006 0 0 0 0 0
+1478 21 0 0 6 0 0 3 0 0
+1480 51450006 0 0 51450006 0 0 0 0 0
+1481 463727994 33 33 154335316 0 0 0 0 0
+1482 361023 2 2 361023 0 0 0 0 0
+1485 722046 0 0 0 0 0 0 0 0
+1489 722046 2 2 0 0 0 0 0 0
+1490 1065526 1 1 304436 0 0 152218 0 0
+1506 307948586 0 0 307948586 0 0 0 0 0
+1507 307948586 0 0 0 0 0 0 0 0
+1512 411600048 1 1 360150042 0 0 0 0 0
+fn=core::fmt::float::<impl core::fmt::Display for f64>::fmt
+1738 102900012 0 0 51450006 0 0 0 0 0
+fn=core::fmt::write
+0 17150226 0 0 0 0 0 0 0 0
+243 102901356 0 0 0 0 0 102901356 96 96
+1080 137201808 2 2 0 0 0 102901356 96 96
+1084 51450678 0 0 17150226 0 0 0 0 0
+1087 17150226 1 1 17150226 0 0 0 0 0
+1091 102900652 0 0 51450326 303 302 0 0 0
+1092 308700618 0 0 205800412 1 1 51450103 0 0
+1094 102900652 0 0 0 0 0 0 0 0
+1095 51450326 0 0 0 0 0 0 0 0
+1117 17150226 1 1 17150226 0 0 0 0 0
+1118 120051582 0 0 85751130 102 100 17150226 0 0
+1122 137201808 0 0 120051582 0 0 0 0 0
+fn=mol_dy::main
+311 764 8 8 0 0 0 630 100 100
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/fmt/num.rs
+fn=core::fmt::num::imp::<impl core::fmt::Display for i32>::fmt
+0 522 1 1 0 0 0 0 0 0
+234 943 0 0 0 0 0 0 0 0
+236 606 0 0 0 0 0 0 0 0
+239 505 0 0 0 0 0 0 0 0
+240 101 0 0 0 0 0 0 0 0
+253 859 0 0 0 0 0 0 0 0
+261 640 1 1 0 0 0 0 0 0
+262 42 0 0 0 0 0 0 0 0
+263 42 0 0 0 0 0 21 0 0
+266 299 0 0 0 0 0 0 0 0
+275 320 0 0 0 0 0 0 0 0
+277 1920 0 0 0 0 0 320 95 95
+283 640 2 2 0 0 0 320 0 0
+284 640 0 0 320 101 101 0 0 0
+285 2240 0 0 0 0 0 0 0 0
+292 960 0 0 640 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/fmt/rt.rs
+fn=core::fmt::write
+138 154350978 1 1 102900652 0 0 51450326 0 0
+fn=mol_dy::main
+83 100 0 0 0 0 0 100 99 99
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/intrinsics.rs
+fn=<&str as alloc::ffi::c_str::CString::new::SpecNewImpl>::spec_new_impl
+2673 4 0 0 1 0 0 1 0 0
+fn=<std::io::Write::write_fmt::Adapter<T> as core::fmt::Write>::write_str
+2673 445159168 0 0 222579584 0 0 222579584 100 100
+fn=<std::io::stdio::StdoutLock as std::io::Write>::write_all
+2673 1176 0 0 392 99 99 392 0 0
+fn=core::fmt::num::imp::<impl core::fmt::Display for i32>::fmt
+2673 1103 1 1 501 173 173 501 0 0
+fn=mol_dy::main
+0 340283200 1 1 266464000 0 0 49212800 0 0
+2673 101940802 0 0 26364000 0 0 26364002 0 0
+fn=rand_chacha::guts::init_chacha::impl_avx
+2673 63 1 1 63 0 0 0 0 0
+fn=std::io::buffered::bufwriter::BufWriter<W>::write_all_cold
+2673 441939 0 0 147313 0 0 147313 28 14
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/iter/adapters/enumerate.rs
+fn=mol_dy::main
+49 17150000 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/iter/adapters/zip.rs
+fn=core::fmt::float::float_to_decimal_common_shortest
+270 123780589 2 2 3932641 0 0 0 0 0
+274 9444146 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/iter/range.rs
+fn=core::fmt::float::float_to_decimal_common_shortest
+621 98464 0 0 0 0 0 0 0 0
+fn=core::num::bignum::Big32x40::mul_pow2
+0 1059460 99 99 1059460 0 0 0 0 0
+621 1282449 0 0 0 0 0 0 0 0
+665 5688034 0 0 0 0 0 0 0 0
+fn=mol_dy::main
+0 119066 6 6 63009 1 0 46859 1 1
+621 1819626 2 2 1 1 1 3 1 1
+fn=rand_chacha::guts::refill_wide::impl_avx2
+621 96474 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/iter/traits/double_ended.rs
+fn=core::fmt::float::float_to_decimal_common_shortest
+236 45687492 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/iter/traits/iterator.rs
+fn=core::fmt::float::float_to_decimal_common_shortest
+3567 22655077 1 1 0 0 0 0 0 0
+3992 49187355 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/macros/mod.rs
+fn=core::fmt::float::float_to_decimal_common_shortest
+0 21666523 26 26 0 0 0 0 0 0
+344 30012368 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/mem/maybe_uninit.rs
+fn=std::sys_common::once::futex::Once::call
+489 8 1 1 0 0 0 6 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/num/bignum.rs
+fn=core::fmt::float::float_to_decimal_common_shortest
+0 11351963 2 2 3709661 0 0 222980 0 0
+94 2229800 2 2 0 0 0 2229800 1351 99
+96 445960 0 0 0 0 0 445960 0 0
+103 1560860 0 0 0 0 0 0 0 0
+108 8473240 5 5 0 0 0 8250260 13745 891
+151 3932641 0 0 3932641 0 0 0 0 0
+154 7866694 2 2 7866694 0 0 0 0 0
+155 7866694 0 0 7865282 0 0 1412 0 0
+158 7866694 0 0 0 0 0 0 0 0
+162 7642302 2 2 3709661 0 0 3932641 0 0
+190 22050154 1 1 11025077 0 0 0 0 0
+191 11025077 4 4 11023010 0 0 2067 0 0
+194 11025077 1 1 0 0 0 0 0 0
+195 6208921 0 0 0 0 0 5511505 0 0
+202 23677 0 0 23677 0 0 0 0 0
+205 16608967 1 1 16608967 0 0 0 0 0
+206 16608967 0 0 0 0 0 16608967 0 0
+209 21062148 1 1 0 0 0 0 0 0
+210 1338213 0 0 0 0 0 446071 0 0
+211 669058 0 0 0 0 0 0 0 0
+213 14017755 2 2 3486681 0 0 10531074 0 0
+397 4490701 0 0 4490701 0 0 0 0 0
+406 24791745 97 97 4824561 0 0 9203162 0 0
+fn=core::num::bignum::Big32x40::mul_pow2
+0 4014970 0 0 0 0 0 0 0 0
+218 3178380 1 1 0 0 0 3178380 0 0
+223 2118920 0 0 0 0 0 0 0 0
+228 1059460 0 0 1059460 0 0 0 0 0
+229 14554668 0 0 1896048 0 0 1896048 0 0
+232 891929 1 1 0 0 0 222989 0 0
+236 1059460 0 0 0 0 0 0 0 0
+237 2118920 1 1 0 0 0 0 0 0
+239 11654038 0 0 1059458 0 0 0 0 0
+240 2118916 0 0 0 0 0 0 0 0
+241 450 0 0 0 0 0 150 0 0
+242 150 0 0 0 0 0 0 0 0
+244 2118916 1 1 0 0 0 0 0 0
+245 1673176 0 0 0 0 0 836588 0 0
+246 7529292 0 0 836588 0 0 0 0 0
+248 3178374 1 1 1059458 0 0 0 0 0
+252 1059460 0 0 0 0 0 1059460 0 0
+254 5297300 0 0 3178380 0 0 0 0 0
+fn=core::num::flt2dec::strategy::dragon::mul_pow10
+202 216597 0 0 216597 0 0 0 0 0
+205 429640 0 0 429640 0 0 0 0 0
+206 429640 0 0 0 0 0 429640 0 0
+209 433194 0 0 0 0 0 0 0 0
+210 27 0 0 0 0 0 9 0 0
+211 18 0 0 0 0 0 0 0 0
+213 216597 0 0 0 0 0 216597 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/num/dec2flt/float.rs
+fn=core::fmt::float::float_to_decimal_common_shortest
+197 154350018 0 0 0 0 0 0 0 0
+198 411600048 1 1 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/num/diy_float.rs
+fn=core::fmt::float::float_to_decimal_common_shortest
+0 308655936 1 1 0 0 0 257213280 204 202
+26 360098592 0 0 0 0 0 51442656 0 0
+27 154327968 0 0 0 0 0 0 0 0
+28 102885312 0 0 0 0 0 0 0 0
+29 51442656 0 0 0 0 0 0 0 0
+30 411541248 0 0 51442656 0 0 102885312 0 0
+31 308655936 1 1 0 0 0 0 0 0
+32 257213280 0 0 0 0 0 0 0 0
+33 154327968 0 0 0 0 0 0 0 0
+34 925967808 1 1 0 0 0 0 0 0
+35 1080295776 1 1 0 0 0 308655936 102 101
+36 102885312 1 1 51442656 0 0 0 0 0
+44 411541248 0 0 0 0 0 0 0 0
+48 411541248 1 1 0 0 0 0 0 0
+52 411541248 0 0 0 0 0 0 0 0
+56 411541248 1 1 0 0 0 0 0 0
+60 360098592 0 0 0 0 0 0 0 0
+64 257213280 0 0 0 0 0 0 0 0
+76 154327968 1 1 0 0 0 0 0 0
+78 668754528 1 1 0 0 0 102885312 1 1
+79 154327968 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/num/f64.rs
+fn=core::fmt::float::float_to_decimal_common_shortest
+0 51450006 0 0 0 0 0 0 0 0
+427 51450006 0 0 0 0 0 0 0 0
+575 51450006 0 0 0 0 0 0 0 0
+601 823200096 1 1 0 0 0 0 0 0
+1071 51450006 0 0 0 0 0 0 0 0
+fn=mol_dy::main
+1168 514500 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/num/flt2dec/decoder.rs
+fn=core::fmt::float::float_to_decimal_common_shortest
+0 14700 0 0 0 0 0 0 0 0
+64 102885312 0 0 0 0 0 0 0 0
+65 257250030 1 1 51450006 102 102 0 0 0
+77 514426560 1 1 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/num/flt2dec/estimator.rs
+fn=core::fmt::float::float_to_decimal_common_shortest
+13 1783840 1 1 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/num/flt2dec/mod.rs
+fn=core::fmt::float::float_to_decimal_common_shortest
+0 360172092 3 3 0 0 0 205807374 2 2
+150 196928 0 0 98464 0 0 0 0 0
+153 98464 0 0 98464 0 0 0 0 0
+311 771750090 1 1 0 0 0 0 0 0
+364 51450006 0 0 0 0 0 0 0 0
+366 257250030 0 0 0 0 0 0 0 0
+388 29400 1 1 0 0 0 14700 0 0
+398 360098592 0 0 205770624 0 0 51442656 99 99
+fn=core::num::flt2dec::digits_to_dec_str
+0 153605928 1 1 0 0 0 102524291 99 99
+182 51442656 1 1 0 0 0 51442656 0 0
+188 51442656 0 0 0 0 0 0 0 0
+189 102885312 0 0 51442656 0 0 0 0 0
+205 102885312 0 0 0 0 0 0 0 0
+207 1083063 0 0 0 0 0 0 0 0
+208 1083063 0 0 0 0 0 722042 0 0
+209 722042 0 0 0 0 0 722042 0 0
+210 1083063 0 0 0 0 0 1083063 0 0
+211 1444084 0 0 0 0 0 0 0 0
+221 153244905 1 1 0 0 0 0 0 0
+223 51081633 0 0 0 0 0 51081633 0 0
+224 204326532 0 0 0 0 0 153244899 1 1
+225 204326532 0 0 0 0 0 153244899 100 100
+226 102163266 1 1 0 0 0 0 0 0
+236 2 1 1 0 0 0 2 0 0
+237 4 0 0 0 0 0 4 1 0
+238 4 0 0 0 0 0 0 0 0
+249 154327968 0 0 102885312 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/num/flt2dec/strategy/dragon.rs
+fn=core::fmt::float::float_to_decimal_common_shortest
+0 27244736 100 100 7419322 0 0 445960 0 0
+86 1457954 0 0 0 0 0 0 0 0
+90 1467996 0 0 0 0 0 0 0 0
+94 1888139 0 0 0 0 0 0 0 0
+139 445960 0 0 0 0 0 0 0 0
+140 668940 2 2 0 0 0 0 0 0
+148 445960 0 0 0 0 0 0 0 0
+151 12439 0 0 0 0 0 1777 0 0
+152 5331 0 0 0 0 0 1777 0 0
+153 1777 0 0 0 0 0 0 0 0
+162 222980 0 0 0 0 0 0 0 0
+164 398606 0 0 0 0 0 0 0 0
+173 668940 0 0 0 0 0 222980 0 0
+175 668940 0 0 0 0 0 222980 0 0
+177 891920 0 0 222980 0 0 222980 0 0
+193 14838644 1 1 0 0 0 3709661 0 0
+229 10920762 0 0 0 0 0 0 0 0
+244 740359 1 1 0 0 0 167540 0 0
+fn=core::num::flt2dec::strategy::dragon::mul_pow10
+35 1132670 1 1 0 0 0 679602 0 0
+37 679602 0 0 0 0 0 0 0 0
+40 453068 1 1 0 0 0 0 0 0
+43 453068 99 99 0 0 0 0 0 0
+46 453068 0 0 0 0 0 0 0 0
+49 453068 1 1 0 0 0 0 0 0
+52 453068 0 0 0 0 0 0 0 0
+55 453068 0 0 0 0 0 0 0 0
+59 1132670 0 0 679602 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/num/flt2dec/strategy/grisu.rs
+fn=core::fmt::float::float_to_decimal_common_shortest
+0 1063002784 3 3 126243255 0 0 102885312 0 0
+124 308655936 0 0 0 0 0 51442656 2 1
+125 308655936 2 2 102885312 102 102 51442656 102 101
+145 205770624 0 0 0 0 0 102885312 0 0
+146 699918 0 0 0 0 0 0 0 0
+147 90756 0 0 0 0 0 0 0 0
+149 2008998 0 0 0 0 0 0 0 0
+152 102185394 1 1 0 0 0 0 0 0
+153 159495028 0 0 0 0 0 0 0 0
+154 113230772 0 0 28307693 0 0 0 0 0
+155 198078517 0 0 0 0 0 0 0 0
+157 64572 0 0 0 0 0 0 0 0
+169 102885312 1 1 0 0 0 0 0 0
+175 51442656 0 0 0 0 0 0 0 0
+179 154327968 0 0 0 0 0 102885312 101 100
+180 154327968 0 0 0 0 0 154327968 0 0
+196 51442656 0 0 0 0 0 0 0 0
+224 102885312 0 0 0 0 0 0 0 0
+227 102885312 0 0 0 0 0 51442656 0 0
+233 257213280 0 0 0 0 0 51442656 0 0
+234 205770624 1 1 0 0 0 51442656 0 0
+241 257213280 1 1 0 0 0 51442656 0 0
+251 102885312 0 0 0 0 0 0 0 0
+253 257213280 0 0 0 0 0 0 0 0
+266 2183444518 0 0 0 0 0 0 0 0
+269 667934996 0 0 0 0 0 333967498 0 0
+270 282524842 0 0 0 0 0 0 0 0
+272 1335869992 1 1 0 0 0 0 0 0
+273 1001902494 0 0 0 0 0 0 0 0
+275 6 1 1 0 0 0 0 0 0
+282 2 0 0 2 0 0 0 0 0
+290 667934992 0 0 0 0 0 0 0 0
+296 847574526 0 0 0 0 0 0 0 0
+311 1026078712 0 0 0 0 0 0 0 0
+312 1539118068 0 0 0 0 0 0 0 0
+313 1026078712 0 0 0 0 0 0 0 0
+317 1026078712 2 2 0 0 0 0 0 0
+318 1026078712 0 0 0 0 0 0 0 0
+320 2360813348 4 4 102885308 0 0 513039356 0 0
+321 513039356 0 0 0 0 0 0 0 0
+323 1539118068 0 0 0 0 0 0 0 0
+331 102885308 0 0 51442654 0 0 0 0 0
+373 51442656 0 0 0 0 0 0 0 0
+374 2 0 0 0 0 0 0 0 0
+420 749799879 104 104 0 0 0 2 0 0
+422 111376258 0 0 0 0 0 0 0 0
+425 28077164 0 0 0 0 0 28077164 0 0
+435 298272834 1 1 0 0 0 0 0 0
+437 27373036 0 0 0 0 0 0 0 0
+447 461542977 3 3 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/num/int_macros.rs
+fn=mol_dy::main
+0 35 0 0 0 0 0 35 0 0
+480 1260 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/num/mod.rs
+fn=core::fmt::Formatter::write_formatted_parts
+1096 152218 0 0 152218 13156 91 0 0 0
+fn=core::fmt::float::float_to_decimal_common_shortest
+274 16608967 0 0 0 0 0 0 0 0
+fn=core::num::flt2dec::strategy::dragon::mul_pow10
+274 859280 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/num/uint_macros.rs
+fn=<&str as alloc::ffi::c_str::CString::new::SpecNewImpl>::spec_new_impl
+1505 2 1 1 0 0 0 0 0 0
+fn=alloc::raw_vec::RawVec<T,A>::reserve_for_push
+604 3022339 0 0 0 0 0 0 0 0
+1505 4796291 0 0 0 0 0 0 0 0
+fn=core::fmt::float::float_to_decimal_common_shortest
+0 668940 0 0 668940 0 0 0 0 0
+149 1114900 0 0 0 0 0 0 0 0
+488 16608967 0 0 0 0 0 0 0 0
+604 16608967 0 0 0 0 0 0 0 0
+1505 17395 0 0 3479 0 0 0 0 0
+1555 18891771 2 2 0 0 0 0 0 0
+1556 9444146 0 0 0 0 0 0 0 0
+fn=core::num::bignum::Big32x40::mul_pow2
+557 2509764 0 0 0 0 0 0 0 0
+fn=core::num::flt2dec::strategy::dragon::mul_pow10
+488 429640 0 0 0 0 0 0 0 0
+604 429640 0 0 0 0 0 0 0 0
+fn=rand_chacha::guts::refill_wide::impl_avx2
+1189 64316 0 0 0 0 0 0 0 0
+fn=std::sys::unix::time::Timespec::sub_timespec
+1505 200 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/ops/arith.rs
+fn=mol_dy::main
+753 49 0 0 49 6 6 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/ops/function.rs
+fn=std::sys_common::backtrace::__rust_begin_short_backtrace
+250 1 0 0 0 0 0 1 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/option.rs
+fn=<&str as alloc::ffi::c_str::CString::new::SpecNewImpl>::spec_new_impl
+933 1 0 0 0 0 0 0 0 0
+fn=<std::io::stdio::StdoutLock as std::io::Write>::write_all
+1814 140 0 0 0 0 0 0 0 0
+fn=core::fmt::float::float_to_decimal_common_shortest
+1839 22655077 0 0 22655077 0 0 0 0 0
+fn=mol_dy::main
+674 5 1 1 1 1 1 0 0 0
+1189 1 0 0 0 0 0 0 0 0
+fn=std::io::stdio::_print
+0 126 2 2 0 0 0 0 0 0
+fn=std::sys_common::once::futex::Once::call
+0 1 1 1 0 0 0 0 0 0
+933 6 1 1 2 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/ptr/const_ptr.rs
+fn=core::fmt::write
+927 17150226 0 0 0 0 0 0 0 0
+fn=core::num::flt2dec::digits_to_dec_str
+927 51081633 0 0 0 0 0 0 0 0
+fn=mol_dy::main
+0 6658969620 1 1 5698398120 0 0 480371500 100 100
+927 240271500 0 0 0 0 0 0 0 0
+fn=std::io::buffered::bufwriter::BufWriter<W>::flush_buf
+927 120537 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/ptr/mod.rs
+fn=<&str as alloc::ffi::c_str::CString::new::SpecNewImpl>::spec_new_impl
+1370 1 1 1 0 0 0 1 0 0
+fn=<std::io::stdio::StdoutLock as std::io::Write>::write_all
+1370 532 1 1 266 0 0 266 0 0
+fn=alloc::sync::Arc<T>::drop_slow
+491 4 0 0 2 0 0 0 0 0
+fn=mol_dy::main
+0 1757701 2 2 101 0 0 0 0 0
+491 41401212 1 1 1792757 1 1 0 0 0
+1370 22525218 12 12 206654 5 1 22318564 1878896 932998
+fn=std::io::stdio::_print
+491 126 0 0 0 0 0 0 0 0
+fn=std::sys::common::thread_local::fast_local::Key<T>::try_initialize
+491 2 0 0 0 0 0 0 0 0
+1172 2 1 1 2 0 0 0 0 0
+1370 2 0 0 0 0 0 2 0 0
+fn=std::sys::common::thread_local::fast_local::destroy_value
+491 2 0 0 0 0 0 0 0 0
+1172 1 0 0 1 1 1 0 0 0
+1370 4 1 1 2 0 0 2 0 0
+fn=std::sys_common::once::futex::Once::call
+491 3 1 1 1 0 0 0 0 0
+1172 1 0 0 1 0 0 0 0 0
+1370 5 0 0 1 0 0 4 0 0
+fn=std::sys_common::thread_info::THREAD_INFO::__getit::destroy
+491 3 0 0 2 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/ptr/mut_ptr.rs
+fn=<rand_core::os::OsRng as rand_core::RngCore>::try_fill_bytes
+0 63 0 0 0 0 0 0 0 0
+1037 63 0 0 0 0 0 0 0 0
+fn=<std::io::Write::write_fmt::Adapter<T> as core::fmt::Write>::write_str
+1037 222579584 0 0 0 0 0 0 0 0
+fn=<std::io::stdio::StdoutLock as std::io::Write>::write_all
+1037 392 0 0 0 0 0 0 0 0
+fn=core::fmt::num::imp::<impl core::fmt::Display for i32>::fmt
+1037 960 1 1 0 0 0 0 0 0
+fn=mol_dy::main
+0 171501 0 0 171500 2 0 1 1 1
+1037 2118179 2 2 0 0 0 0 0 0
+fn=std::io::buffered::bufwriter::BufWriter<W>::write_all_cold
+1037 147313 0 0 0 0 0 0 0 0
+fn=std::sys_common::once::futex::Once::call
+36 1 0 0 0 0 0 0 0 0
+488 1 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/result.rs
+fn=<std::io::stdio::StdoutLock as std::io::Write>::write_all
+1948 126 0 0 0 0 0 0 0 0
+fn=alloc::raw_vec::RawVec<T,A>::reserve_for_push
+1948 9592582 0 0 9592582 0 0 0 0 0
+fn=alloc::raw_vec::finish_grow
+0 4796291 0 0 0 0 0 0 0 0
+826 19185164 0 0 0 0 0 0 0 0
+827 9592582 1 1 0 0 0 4796291 671 33
+fn=mol_dy::main
+745 2 0 0 1 0 0 0 0 0
+746 1 0 0 1 0 0 0 0 0
+fn=rand::rngs::adapter::reseeding::ReseedingCore<R,Rsdr>::reseed_and_generate
+1948 62 0 0 0 0 0 0 0 0
+fn=std::io::buffered::bufwriter::BufWriter<W>::write_all_cold
+1948 120284 0 0 0 0 0 0 0 0
+fn=std::sys::common::thread_local::fast_local::Key<T>::try_initialize
+1427 6 0 0 3 0 0 3 0 0
+1948 1 0 0 0 0 0 0 0 0
+fn=std::sys::unix::fs::File::open_c
+0 1 0 0 0 0 0 1 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/slice/index.rs
+fn=<rand_core::os::OsRng as rand_core::RngCore>::try_fill_bytes
+502 189 0 0 0 0 0 0 0 0
+fn=core::fmt::Formatter::write_formatted_parts
+217 152218 0 0 0 0 0 0 0 0
+fn=core::fmt::float::float_to_decimal_common_shortest
+0 108897187 2 2 668942 0 0 668940 0 0
+407 45742932 4 4 0 0 0 0 0 0
+418 29124364 13 13 0 0 0 0 0 0
+fn=core::fmt::write
+217 34300452 0 0 17150226 0 0 0 0 0
+fn=core::num::flt2dec::digits_to_dec_str
+383 51081633 0 0 0 0 0 0 0 0
+fn=core::num::flt2dec::strategy::dragon::mul_pow10
+418 433194 0 0 0 0 0 0 0 0
+fn=mol_dy::main
+0 17150000 0 0 17150000 342 38 0 0 0
+258 2 0 0 0 0 0 0 0 0
+264 68600000 0 0 0 0 0 0 0 0
+fn=std::io::buffered::bufwriter::BufWriter<W>::flush_buf
+0 120285 0 0 120285 0 0 0 0 0
+493 252 0 0 0 0 0 0 0 0
+719 240696 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/slice/iter/macros.rs
+fn=core::fmt::Formatter::write_formatted_parts
+0 463050054 0 0 51450006 0 0 102900012 100 100
+141 411570644 2 2 154335316 0 0 0 0 0
+fn=core::fmt::float::float_to_decimal_common_shortest
+141 113013345 10 10 0 0 0 0 0 0
+310 98464 0 0 0 0 0 0 0 0
+311 196928 0 0 0 0 0 0 0 0
+352 45507082 0 0 0 0 0 0 0 0
+fn=core::fmt::write
+0 34300452 0 0 34300452 0 0 0 0 0
+141 274402560 0 0 0 0 0 0 0 0
+fn=core::num::flt2dec::strategy::dragon::mul_pow10
+0 433194 0 0 216597 1626 100 0 0 0
+141 2588502 0 0 0 0 0 0 0 0
+fn=mol_dy::main
+0 320273310 7 7 5445603 701 448 65937202 17150301 11311803
+141 7912679110 102 102 340934402 52 52 1 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/slice/memchr.rs
+fn=<&str as alloc::ffi::c_str::CString::new::SpecNewImpl>::spec_new_impl
+0 2 0 0 0 0 0 0 0 0
+43 2 0 0 0 0 0 0 0 0
+56 11 1 1 0 0 0 0 0 0
+57 8 0 0 4 0 0 0 0 0
+61 4 0 0 0 0 0 0 0 0
+fn=mol_dy::main
+0 3 0 0 0 0 0 0 0 0
+57 18 2 2 2 1 1 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/slice/mod.rs
+fn=<rand_core::os::OsRng as rand_core::RngCore>::try_fill_bytes
+157 63 0 0 0 0 0 0 0 0
+fn=<std::io::stdio::StdoutLock as std::io::Write>::write_all
+299 140 0 0 0 0 0 0 0 0
+1604 252 1 1 0 0 0 0 0 0
+fn=core::num::flt2dec::digits_to_dec_str
+157 51442656 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/str/mod.rs
+fn=core::fmt::Formatter::write_formatted_parts
+182 51450006 0 0 0 0 0 0 0 0
+220 152218 0 0 0 0 0 0 0 0
+fn=core::fmt::write
+182 51450326 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/str/traits.rs
+fn=core::fmt::Formatter::write_formatted_parts
+276 152218 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/sync/atomic.rs
+fn=<rand_core::os::OsRng as rand_core::RngCore>::try_fill_bytes
+3138 1 1 1 0 0 0 1 0 0
+3153 63 0 0 63 63 1 0 0 0
+fn=alloc::sync::Arc<T>::drop_slow
+3205 1 0 0 2 0 0 0 0 0
+fn=mol_dy::main
+3153 16079 3 3 16079 0 0 0 0 0
+fn=rand::rngs::adapter::reseeding::ReseedingCore<R,Rsdr>::reseed_and_generate
+3153 62 0 0 62 0 0 0 0 0
+fn=rand_chacha::guts::refill_wide
+3153 16079 0 0 16079 0 0 0 0 0
+fn=std::io::stdio::_print
+3138 630 0 0 126 0 0 252 0 0
+3153 126 2 2 126 0 0 0 0 0
+3154 126 0 0 126 102 102 0 0 0
+3171 126 0 0 252 0 0 0 0 0
+3228 252 0 0 126 0 0 0 0 0
+fn=std::sync::once_lock::OnceLock<T>::initialize
+3154 1 0 0 1 0 0 0 0 0
+fn=std::sys::common::thread_local::fast_local::Key<T>::try_initialize
+3153 1 1 1 1 1 1 0 0 0
+3154 1 1 1 1 1 1 0 0 0
+fn=std::sys_common::once::futex::Once::call
+0 7 1 1 2 0 0 0 0 0
+3138 5 1 1 1 0 0 2 0 0
+3153 2 0 0 2 1 1 0 0 0
+3154 18 2 2 8 3 2 0 0 0
+3171 4 0 0 8 0 0 0 0 0
+3228 2 0 0 1 0 0 0 0 0
+3264 7 0 0 3 0 0 0 0 0
+fn=std::sys_common::thread_info::THREAD_INFO::__getit::destroy
+3205 1 0 0 2 1 1 0 0 0
+fn=std_detect::detect::cache::detect_and_initialize
+3138 1 1 1 0 0 0 1 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/core/src/time.rs
+fn=std::sys::unix::time::Timespec::sub_timespec
+200 1000 0 0 0 0 0 0 0 0
+204 800 1 1 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/f64.rs
+fn=mol_dy::main
+0 1757702 1 1 1757602 0 0 100 0 0
+50 137217780 1 1 34317579 0 0 68617779 0 0
+95 20320832529 1 1 6773610843 0 0 9031481124 0 0
+370 2 0 0 0 0 0 2 0 0
+395 22 0 0 0 0 0 0 0 0
+583 7065759 1 1 5308155 735 210 3532881 1 1
+fn=mol_dy::process_cell
+0 246064 0 0 0 0 0 0 0 0
+50 492128 0 0 492128 0 0 492128 0 0
+583 492128 0 0 492128 0 0 492128 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/fs.rs
+fn=mol_dy::main
+878 1 0 0 0 0 0 1 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/io/buffered/bufwriter.rs
+fn=<std::io::Write::write_fmt::Adapter<T> as core::fmt::Write>::write_str
+0 222579584 0 0 222579584 0 0 0 0 0
+437 222579584 0 0 0 0 0 0 0 0
+442 222726897 0 0 0 0 0 0 0 0
+535 445453794 0 0 0 0 0 0 0 0
+543 441939 0 0 0 0 0 147313 0 0
+fn=<std::io::stdio::StdoutLock as std::io::Write>::write_all
+0 518 1 1 392 0 0 0 0 0
+437 392 0 0 0 0 0 0 0 0
+442 392 0 0 0 0 0 0 0 0
+535 784 0 0 0 0 0 0 0 0
+fn=mol_dy::main
+0 1 0 0 0 0 0 0 0 0
+115 5 0 0 0 0 0 5 0 0
+669 2 1 1 1 0 0 0 0 0
+671 1 0 0 0 0 0 1 0 0
+fn=std::io::buffered::bufwriter::BufWriter<W>::flush_buf
+0 361611 1 1 240570 0 0 252 2 1
+125 1925449 3 3 360855 0 0 1083327 1036 100
+141 126 0 0 126 0 0 0 0 0
+146 120663 1 1 126 0 0 0 0 0
+151 481393 0 0 0 0 0 0 0 0
+157 240570 0 0 0 0 0 0 0 0
+164 240823 1 1 0 0 0 0 0 0
+165 252 1 1 0 0 0 126 0 0
+167 120537 1 1 0 0 0 120411 0 0
+169 240822 0 0 0 0 0 0 0 0
+182 1083581 3 3 842884 0 0 0 0 0
+fn=std::io::buffered::bufwriter::BufWriter<W>::write_all_cold
+392 1473130 1 1 0 0 0 1031191 167 0
+398 294626 1 1 0 0 0 0 0 0
+399 360852 0 0 0 0 0 120284 175 95
+404 294626 0 0 0 0 0 0 0 0
+425 1178504 35 35 1031191 0 0 0 0 0
+437 147313 0 0 0 0 0 0 0 0
+442 294626 0 0 147313 0 0 0 0 0
+fn=std::sys_common::once::futex::Once::call
+0 1 0 0 0 0 0 0 0 0
+669 2 0 0 1 0 0 0 0 0
+671 2 1 1 0 0 0 1 1 1
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/io/buffered/linewriter.rs
+fn=std::sys_common::once::futex::Once::call
+109 4 1 1 0 0 0 3 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/io/buffered/linewritershim.rs
+fn=<std::io::stdio::StdoutLock as std::io::Write>::write_all
+0 252 0 0 0 0 0 0 0 0
+38 280 1 1 280 0 0 0 0 0
+45 28 0 0 14 0 0 0 0 0
+257 126 0 0 0 0 0 0 0 0
+259 252 0 0 0 0 0 0 0 0
+269 378 1 1 0 0 0 126 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/io/mod.rs
+fn=<std::io::Write::write_fmt::Adapter<T> as core::fmt::Write>::write_str
+0 147313 0 0 0 0 0 0 0 0
+1700 1336362446 7 7 0 0 0 1113635283 2 1
+1701 223023651 1 1 222727429 0 0 266 0 0
+1708 1336362446 1 1 1113635549 0 0 0 0 0
+fn=mol_dy::main
+0 17150100 0 0 17150100 0 0 0 0 0
+1711 51450300 0 0 0 0 0 34300200 0 0
+1712 222951200 4 4 0 0 0 102900600 0 0
+fn=std::io::stdio::_print
+0 252 0 0 126 0 0 0 0 0
+1711 252 0 0 0 0 0 252 0 0
+1712 882 1 1 0 0 0 126 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/io/stdio.rs
+fn=<std::io::stdio::StdoutLock as std::io::Write>::write_all
+745 1862 1 1 0 0 0 1596 3 2
+746 266 0 0 0 0 0 0 0 0
+747 2128 0 0 1862 0 0 0 0 0
+fn=std::io::stdio::_print
+726 1008 1 1 378 0 0 504 96 96
+727 126 0 0 126 0 0 0 0 0
+1018 1008 0 0 378 0 0 378 96 96
+1094 504 2 2 0 0 0 378 94 94
+1095 1134 102 102 378 0 0 630 95 95
+1096 630 0 0 504 0 0 0 0 0
+fn=std::sys_common::once::futex::Once::call
+625 1 0 0 0 0 0 1 0 0
+631 2 1 1 1 0 0 0 0 0
+637 4 0 0 2 0 0 2 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/os/fd/owned.rs
+fn=mol_dy::main
+178 1 0 0 1 1 1 1 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sync/once.rs
+fn=std::sync::once_lock::OnceLock<T>::initialize
+203 1 0 0 0 0 0 0 0 0
+207 5 1 1 0 0 0 2 0 0
+208 3 0 0 0 0 0 2 1 1
+fn=std::sys::common::thread_local::fast_local::Key<T>::try_initialize
+144 1 0 0 0 0 0 0 0 0
+148 2 1 1 0 0 0 1 0 0
+149 4 0 0 0 0 0 2 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sync/once_lock.rs
+fn=std::io::stdio::_print
+215 126 0 0 0 0 0 0 0 0
+218 2 1 1 0 0 0 1 1 1
+fn=std::sync::once_lock::OnceLock<T>::initialize
+286 1 1 1 0 0 0 0 0 0
+310 2 0 0 1 0 0 0 0 0
+fn=std::sys_common::once::futex::Once::call
+215 1 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sync/remutex.rs
+fn=std::io::stdio::_print
+0 252 0 0 0 0 0 126 0 0
+100 504 0 0 126 96 96 0 0 0
+162 126 0 0 126 0 0 0 0 0
+163 126 0 0 0 0 0 0 0 0
+fn=std::sys_common::once::futex::Once::call
+0 1 0 0 0 0 0 1 0 0
+128 4 0 0 1 0 0 0 0 0
+131 1 0 0 0 0 0 0 0 0
+162 1 0 0 1 0 0 0 0 0
+163 1 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sys/common/thread_local/fast_local.rs
+fn=mol_dy::main
+177 1 0 0 0 0 0 1 0 0
+fn=std::sys::common::thread_local::fast_local::Key<T>::try_initialize
+0 1 0 0 0 0 0 0 0 0
+190 2 1 1 0 0 0 1 0 0
+198 3 0 0 2 0 0 0 0 0
+204 1 0 0 0 0 0 0 0 0
+211 4 0 0 1 1 0 1 1 0
+fn=std::sys::common::thread_local::fast_local::destroy_value
+224 1 1 1 0 0 0 0 0 0
+fn=std::sys_common::thread_info::THREAD_INFO::__getit::destroy
+43 1 0 0 0 0 0 1 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sys/unix/alloc.rs
+fn=<&str as alloc::ffi::c_str::CString::new::SpecNewImpl>::spec_new_impl
+13 2 0 0 0 0 0 0 0 0
+14 3 1 1 1 0 0 1 0 0
+fn=alloc::raw_vec::finish_grow
+13 7101124 0 0 0 0 0 0 0 0
+47 6042020 0 0 0 0 0 0 0 0
+48 9063030 0 0 3021010 920 135 3021010 312 4
+fn=alloc::sync::Arc<T>::drop_slow
+42 4 1 1 3 0 0 1 0 0
+fn=mol_dy::main
+0 56278552 2 2 26381776 100 100 0 0 0
+13 52728000 0 0 0 0 0 0 0 0
+14 80849602 2 2 28121601 7 0 26364001 0 0
+42 152928885 1 1 101940907 101 100 28139282 0 0
+fn=std::io::stdio::_print
+0 126 2 2 0 0 0 0 0 0
+fn=std::sys::common::thread_local::fast_local::Key<T>::try_initialize
+14 2 0 0 1 0 0 1 0 0
+fn=std::sys::common::thread_local::fast_local::destroy_value
+42 1 0 0 1 0 0 0 0 0
+fn=std::sys_common::once::futex::Once::call
+14 2 0 0 1 0 0 1 1 0
+42 1 0 0 1 0 0 1 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sys/unix/args.rs
+fn=std::sys::unix::args::imp::ARGV_INIT_ARRAY::init_wrapper
+125 1 1 1 1 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sys/unix/fd.rs
+fn=std::io::buffered::bufwriter::BufWriter<W>::flush_buf
+248 240948 1 1 120411 102 100 120411 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sys/unix/fs.rs
+fn=mol_dy::main
+966 3 0 0 0 0 0 2 0 0
+984 1 1 1 0 0 0 1 0 0
+990 1 0 0 0 0 0 1 0 0
+993 1 0 0 0 0 0 1 0 0
+1044 1 0 0 0 0 0 1 0 0
+fn=std::sys::unix::fs::File::open_c
+0 6 0 0 0 0 0 0 0 0
+1007 8 0 0 3 0 0 0 0 0
+1032 7 1 1 3 0 0 0 0 0
+1047 9 2 2 0 0 0 7 0 0
+1048 3 0 0 0 0 0 0 0 0
+1051 2 0 0 1 0 0 0 0 0
+1056 6 1 1 2 0 0 1 0 0
+1057 2 1 1 0 0 0 1 0 0
+1058 8 0 0 7 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sys/unix/futex.rs
+fn=std::sys_common::once::futex::Once::call
+0 3 3 3 3 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sys/unix/locks/futex_mutex.rs
+fn=std::io::stdio::_print
+27 126 0 0 0 0 0 0 0 0
+83 252 0 0 0 0 0 0 0 0
+fn=std::sys_common::once::futex::Once::call
+83 2 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sys/unix/memchr.rs
+fn=<std::io::stdio::StdoutLock as std::io::Write>::write_all
+0 252 0 0 0 0 0 126 0 0
+19 532 0 0 0 0 0 0 0 0
+23 1064 0 0 266 100 100 266 2 1
+31 658 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sys/unix/mod.rs
+fn=std::io::buffered::bufwriter::BufWriter<W>::flush_buf
+294 120411 0 0 0 0 0 0 0 0
+302 120411 0 0 0 0 0 0 0 0
+fn=std::sys::unix::fs::File::open_c
+294 1 0 0 0 0 0 0 0 0
+302 1 0 0 0 0 0 0 0 0
+fn=std::sys::unix::time::inner::<impl std::sys::unix::time::Timespec>::now
+294 400 0 0 0 0 0 0 0 0
+302 400 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sys/unix/os.rs
+fn=std::sys_common::once::futex::Once::call
+593 5 0 0 1 1 0 2 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sys/unix/stack_overflow.rs
+fn=std::sys_common::once::futex::Once::call
+0 1 0 0 0 0 0 0 0 0
+173 1 0 0 0 0 0 0 0 0
+174 4 1 1 0 0 0 3 0 0
+183 2 0 0 1 1 1 1 0 0
+186 3 1 1 1 1 1 1 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sys/unix/thread_local_dtor.rs
+fn=std::sys::unix::thread_local_dtor::register_dtor
+15 10 1 1 0 0 0 6 1 0
+25 4 1 1 2 1 1 0 0 0
+31 14 0 0 8 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sys/unix/time.rs
+fn=mol_dy::main
+0 600 0 0 200 100 100 200 100 100
+363 1900 4 4 400 199 100 1400 199 100
+367 800 0 0 0 0 0 200 0 0
+fn=std::sys::unix::time::Timespec::sub_timespec
+0 200 0 0 0 0 0 0 0 0
+33 600 0 0 0 0 0 0 0 0
+82 800 1 1 0 0 0 200 0 0
+97 1600 1 1 0 0 0 0 0 0
+106 600 0 0 0 0 0 600 0 0
+113 600 0 0 400 0 0 0 0 0
+fn=std::sys::unix::time::inner::<impl std::sys::unix::time::Timespec>::now
+77 800 0 0 0 0 0 0 0 0
+395 1200 1 1 0 0 0 400 0 0
+418 800 0 0 400 200 200 400 100 100
+419 800 0 0 800 0 0 0 0 0
+420 1200 1 1 800 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sys_common/backtrace.rs
+fn=std::sys_common::backtrace::__rust_begin_short_backtrace
+131 1 0 0 0 0 0 1 0 0
+141 2 0 0 2 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/sys_common/once/futex.rs
+fn=std::io::stdio::_print
+79 126 0 0 0 0 0 0 0 0
+fn=std::sync::once_lock::OnceLock<T>::initialize
+79 1 0 0 0 0 0 0 0 0
+fn=std::sys::common::thread_local::fast_local::Key<T>::try_initialize
+79 1 0 0 0 0 0 0 0 0
+fn=std::sys_common::once::futex::Once::call
+0 12 2 2 3 3 3 0 0 0
+59 6 0 0 0 0 0 0 0 0
+79 1 0 0 0 0 0 0 0 0
+97 24 3 3 0 0 0 21 1 0
+100 6 0 0 0 0 0 0 0 0
+107 6 0 0 0 0 0 0 0 0
+124 3 0 0 3 0 0 0 0 0
+144 24 0 0 21 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/std/src/thread/local.rs
+fn=mol_dy::main
+269 1 0 0 0 0 0 0 0 0
+270 1 0 0 1 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/stdarch/crates/std_detect/src/detect/bit.rs
+fn=std_detect::detect::cache::detect_and_initialize
+8 2 0 0 0 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/stdarch/crates/std_detect/src/detect/cache.rs
+fn=rand::rngs::adapter::reseeding::ReseedingCore<R,Rsdr>::reseed_and_generate
+0 62 0 0 0 0 0 0 0 0
+107 124 0 0 0 0 0 0 0 0
+fn=rand_chacha::guts::refill_wide
+0 16079 0 0 0 0 0 0 0 0
+107 32158 0 0 0 0 0 0 0 0
+fn=std::sys::common::thread_local::fast_local::Key<T>::try_initialize
+0 1 1 1 0 0 0 0 0 0
+107 2 0 0 0 0 0 0 0 0
+193 1 0 0 0 0 0 1 0 0
+fn=std_detect::detect::cache::detect_and_initialize
+119 1 0 0 0 0 0 0 0 0
+168 7 1 1 0 0 0 6 0 0
+170 9 0 0 7 0 0 0 0 0
+fl=/rustc/8b4b20836b832e91aa605a2faf5e2a55190202c8/library/stdarch/crates/std_detect/src/detect/os/x86.rs
+fn=std_detect::detect::cache::detect_and_initialize
+0 15 1 1 1 0 0 1 0 0
+61 2 0 0 0 0 0 0 0 0
+76 3 0 0 0 0 0 1 0 0
+93 3 1 1 0 0 0 1 0 0
+103 113 8 8 0 0 0 1 0 0
+136 3 0 0 0 0 0 0 0 0
+162 2 0 0 0 0 0 1 0 0
+166 2 0 0 1 0 0 0 0 0
+170 3 0 0 0 0 0 0 0 0
+186 3 0 0 1 0 0 0 0 0
+205 1 1 1 0 0 0 0 0 0
+248 9 1 1 0 0 0 0 0 0
+270 3 0 0 0 0 0 0 0 0
+fl=???
+fn=(below main)
+0 38 6 6 10 2 0 13 0 0
+fn=???
+0 5836690 46 45 2918299 670 149 18 1 1
+fn=_Exit
+0 6 1 1 1 0 0 0 0 0
+fn=_IO_cleanup
+0 85 9 9 24 0 0 20 0 0
+fn=_IO_default_finish
+0 16 2 2 6 0 0 1 0 0
+fn=_IO_doallocbuf
+0 26 3 3 8 1 0 4 0 0
+fn=_IO_file_close
+0 3 1 1 1 0 0 0 0 0
+fn=_IO_file_close_it@@GLIBC_2.2.5
+0 53 5 5 10 0 0 13 0 0
+fn=_IO_file_doallocate
+0 51 4 4 12 1 0 7 0 0
+fn=_IO_file_finish@@GLIBC_2.2.5
+0 13 3 3 3 0 0 2 0 0
+fn=_IO_file_fopen@@GLIBC_2.2.5
+0 94 8 8 19 2 2 9 0 0
+fn=_IO_file_open
+0 34 3 3 6 0 0 7 0 0
+fn=_IO_file_read
+0 36 1 1 12 0 0 0 0 0
+fn=_IO_file_stat
+0 3 1 1 1 0 0 0 0 0
+fn=_IO_file_underflow@@GLIBC_2.2.5
+0 367 6 6 116 1 1 67 0 0
+fn=_IO_flush_all_lockp
+0 98 10 10 29 11 11 21 0 0
+fn=_IO_link_in
+0 82 7 7 26 1 0 25 0 0
+fn=_IO_new_file_init_internal
+0 9 1 1 3 0 0 4 0 0
+fn=_IO_no_init
+0 1134 3 3 245 0 0 399 2 2
+fn=_IO_old_init
+0 1129 2 2 147 1 1 492 2 2
+fn=_IO_setb
+0 1405 1 1 351 0 0 351 0 0
+fn=_IO_sputbackc
+0 3648 3 3 1344 0 0 576 0 0
+fn=_IO_str_init_static_internal
+0 1920 4 4 240 0 0 624 0 0
+fn=_IO_switch_to_get_mode
+0 150 3 3 48 0 0 42 0 0
+fn=_IO_un_link
+0 8 0 0 3 0 0 0 0 0
+fn=_IO_unsave_markers
+0 10 2 2 4 0 0 1 0 0
+fn=__GI__IO_un_link.part.0
+0 61 11 11 14 0 0 16 0 0
+fn=__GI___close_nocancel
+0 24 2 2 4 0 0 0 0 0
+fn=__GI___tunable_set_val
+0 40 1 1 0 0 0 0 0 0
+fn=__GI___tunables_init
+0 78003 6 6 14446 123 123 7 0 0
+fn=__GI_strstr
+0 34 4 4 11 1 1 8 0 0
+fn=____strtoul_l_internal
+0 24578 11 11 2834 5 4 960 1 0
+fn=__acos_finite@GLIBC_2.15
+0 8 2 2 4 0 0 0 0 0
+fn=__asin_finite@GLIBC_2.15
+0 8 1 1 4 0 0 0 0 0
+fn=__atan2_finite@GLIBC_2.15
+0 9 2 2 4 0 0 0 0 0
+fn=__call_tls_dtors
+0 41 2 2 21 2 2 8 1 1
+fn=__close_nocancel
+0 6 1 1 1 0 0 0 0 0
+fn=__cpu_indicator_init@GCC_4.8.0
+0 128 11 11 13 3 2 17 0 0
+fn=__ctype_init
+0 17 2 2 10 5 0 3 0 0
+fn=__cxa_atexit
+0 3 1 1 0 0 0 0 0 0
+fn=__cxa_finalize
+0 232 5 5 64 1 1 28 0 0
+fn=__cxa_thread_atexit_impl
+0 94 5 5 26 2 2 28 0 0
+fn=__exp_finite@GLIBC_2.15
+0 9 2 2 4 0 0 0 0 0
+fn=__floor_sse41
+0 155879418 2 2 51959806 0 0 0 0 0
+fn=__fopen_internal
+0 43 4 4 7 0 0 11 1 1
+fn=__glibc_morecore
+0 216 3 3 48 0 0 24 0 0
+fn=__ieee754_pow_fma
+0 212 9 9 48 9 9 0 0 0
+fn=__init_misc
+0 25 2 2 7 0 0 5 1 0
+fn=__internal_atexit
+0 38 3 3 9 1 1 9 1 1
+fn=__isoc99_sscanf
+0 2400 6 6 336 0 0 816 0 0
+fn=__libc_cleanup_pop_restore
+0 468 2 2 260 0 0 52 0 0
+fn=__libc_cleanup_push_defer
+0 676 4 4 208 1 1 156 0 0
+fn=__libc_early_init
+0 51 4 4 10 2 0 11 4 4
+fn=__libc_scratch_buffer_set_array_size
+0 80 2 2 20 0 0 12 0 0
+fn=__libc_sigaction
+0 276 8 8 83 0 0 71 2 1
+fn=__libc_start_main@@GLIBC_2.34
+0 78 5 5 20 3 0 15 0 0
+fn=__lll_elision_init
+0 37 3 3 6 1 1 8 1 1
+fn=__log_finite@GLIBC_2.15
+0 9 2 2 4 0 0 0 0 0
+fn=__memchr_avx2
+0 2420 10 10 328 15 15 0 0 0
+fn=__memcpy_avx_unaligned_erms
+0 4043447640 116 116 717577238 11061558 1903363 456362266 500077 377131
+fn=__memrchr_avx2
+0 4788 1 1 532 126 126 0 0 0
+fn=__memset_avx2_unaligned_erms
+0 37 5 5 3 0 0 10 2 2
+fn=__minimal_calloc
+0 132 2 2 12 0 0 0 0 0
+fn=__minimal_free
+0 33 1 1 11 0 0 2 0 0
+fn=__minimal_malloc
+0 1048 4 4 204 2 1 205 1 1
+fn=__new_exitfn
+0 34 4 4 8 2 1 5 0 0
+fn=__open_nocancel
+0 313 4 4 19 0 0 28 1 1
+fn=__pow_finite@GLIBC_2.15
+0 8 2 2 4 0 0 0 0 0
+fn=__pread64_nocancel
+0 14 1 1 2 0 0 0 0 0
+fn=__pthread_attr_extension
+0 14 1 1 3 0 0 3 0 0
+fn=__pthread_mutex_unlock_usercnt
+0 105 8 8 27 0 0 6 0 0
+fn=__pthread_tunables_init
+0 21 2 2 5 0 0 4 0 0
+fn=__rawmemchr_avx2
+0 2003 5 5 360 1 1 0 0 0
+fn=__read_nocancel
+0 60 2 2 10 0 0 0 0 0
+fn=__register_atfork
+0 48 4 4 13 2 2 14 1 1
+fn=__rtld_malloc_init_real
+0 108 5 5 12 1 1 17 0 0
+fn=__rtld_malloc_init_stubs
+0 10 2 2 1 0 0 4 2 2
+fn=__rtld_mutex_init
+0 42 3 3 11 0 0 7 0 0
+fn=__run_exit_handlers
+0 76 8 8 17 3 3 15 2 2
+fn=__scalbn
+0 56685200 2 2 2267408 0 0 0 0 0
+fn=__sigjmp_save
+0 9 0 0 2 0 0 2 0 0
+fn=__sigsetjmp
+0 205 5 5 45 1 0 80 2 2
+fn=__strchr_avx2
+0 21 2 2 3 1 1 0 0 0
+fn=__strrchr_avx2
+0 22 2 2 2 1 0 0 0 0
+fn=__strtoul_internal
+0 384 2 2 192 0 0 0 0 0
+fn=__tls_init_tp
+0 53 5 5 9 1 1 15 1 1
+fn=__tls_pre_init_tp
+0 17 2 2 1 0 0 5 2 2
+fn=__tunable_get_val
+0 635 4 2 124 35 14 31 0 0
+fn=__underflow
+0 215 4 4 66 1 0 13 0 0
+fn=__unregister_atfork
+0 94 6 6 26 2 2 5 0 0
+fn=__vfscanf_internal
+0 53180 46 46 14432 10 7 6900 8 1
+fn=__x86_cacheinfo
+0 28 3 3 9 2 0 8 2 2
+fn=__x86_cpu_features
+0 6 1 0 2 0 0 0 0 0
+fn=_dl_add_to_namespace_list
+0 215 3 3 54 0 0 39 1 1
+fn=_dl_add_to_slotinfo
+0 56 3 3 18 3 0 12 1 0
+fn=_dl_allocate_tls_init
+0 150 6 6 44 7 0 21 0 0
+fn=_dl_allocate_tls_storage
+0 331 3 3 7 0 0 303 38 38
+fn=_dl_assign_tls_modid
+0 10 2 2 3 0 0 2 0 0
+fn=_dl_audit_activity_map
+0 20 2 2 9 0 0 6 0 0
+fn=_dl_audit_activity_nsid
+0 27 4 3 9 1 1 0 0 0
+fn=_dl_audit_objclose
+0 30 1 1 12 0 0 0 0 0
+fn=_dl_audit_objopen
+0 20 1 1 8 0 0 0 0 0
+fn=_dl_audit_preinit
+0 5 1 1 2 0 0 0 0 0
+fn=_dl_call_fini
+0 172 3 3 72 25 25 22 0 0
+fn=_dl_call_libc_early_init
+0 24 2 2 5 0 0 3 0 0
+fn=_dl_catch_error
+0 23 2 2 7 0 0 7 0 0
+fn=_dl_catch_exception
+0 328 4 4 80 0 0 104 4 4
+fn=_dl_cet_check
+0 2 0 0 0 0 0 0 0 0
+fn=_dl_check_all_versions
+0 98 3 3 17 0 0 10 0 0
+fn=_dl_check_map_versions
+0 8496 24 24 2955 56 55 649 42 42
+fn=_dl_count_modids
+0 6 2 2 3 0 0 0 0 0
+fn=_dl_debug_initialize
+0 32 5 5 7 1 1 5 0 0
+fn=_dl_debug_state
+0 4 1 1 2 0 0 0 0 0
+fn=_dl_debug_update
+0 35 1 0 10 1 0 0 0 0
+fn=_dl_determine_tlsoffset
+0 112 6 6 22 1 1 12 0 0
+fn=_dl_dst_count
+0 216 2 2 72 0 0 72 2 2
+fn=_dl_find_dso_for_object
+0 60 4 4 22 4 4 8 0 0
+fn=_dl_find_object_from_map
+0 373 2 2 101 60 8 24 4 4
+fn=_dl_find_object_init
+0 39 5 5 11 2 0 10 0 0
+fn=_dl_fini
+0 267 9 9 68 16 16 52 6 6
+fn=_dl_hwcaps_contains
+0 30 2 2 6 0 0 0 0 0
+fn=_dl_hwcaps_split
+0 408 2 2 90 1 1 69 0 0
+fn=_dl_hwcaps_split_masked
+0 212 1 1 49 0 0 40 1 1
+fn=_dl_hwcaps_subdirs_active
+0 49 4 4 6 0 0 0 0 0
+fn=_dl_important_hwcaps
+0 217 14 14 44 0 0 63 3 3
+fn=_dl_init
+0 90 5 5 23 3 0 14 1 0
+fn=_dl_init_paths
+0 106 9 9 21 0 0 36 2 2
+fn=_dl_lookup_direct
+0 175 4 4 47 0 0 27 0 0
+fn=_dl_lookup_symbol_x
+0 42926 13 13 10036 155 146 4999 3 3
+fn=_dl_map_object
+0 1193 16 16 284 1 1 183 8 8
+fn=_dl_map_object_deps
+0 1943 37 37 357 2 2 191 10 10
+fn=_dl_map_object_from_fd
+0 5558 69 69 1264 105 105 550 38 38
+fn=_dl_name_match_p
+0 1503 2 2 401 0 0 234 0 0
+fn=_dl_new_object
+0 1020 15 15 187 6 6 185 35 35
+fn=_dl_next_ld_env_entry
+0 938 2 2 318 0 0 1 0 0
+fn=_dl_process_pt_gnu_property
+0 100 3 3 40 5 5 0 0 0
+fn=_dl_protect_relro
+0 120 2 2 36 1 0 12 0 0
+fn=_dl_receive_error
+0 21 2 2 7 0 0 7 0 0
+fn=_dl_relocate_object
+0 51013 54 54 12135 820 743 3889 217 209
+fn=_dl_setup_hash
+0 162 3 3 48 7 7 36 1 1
+fn=_dl_sort_maps
+0 362 18 17 106 1 1 40 0 0
+fn=_dl_sort_maps_init
+0 12 1 1 2 0 0 2 0 0
+fn=_dl_start
+0 565 25 24 113 17 15 47 15 15
+fn=_dl_sysdep_parse_arguments
+0 721 6 6 210 24 24 94 11 11
+fn=_dl_sysdep_start
+0 35 4 3 9 1 0 11 1 1
+fn=_dl_sysdep_start_cleanup
+0 2 1 1 1 0 0 0 0 0
+fn=_dl_tls_static_surplus_init
+0 36 2 2 6 0 0 7 0 0
+fn=_dl_unload_cache
+0 7 1 1 2 1 0 1 0 0
+fn=_dl_x86_init_cpu_features
+0 5 2 2 1 0 0 0 0 0
+fn=_dlfo_process_initial
+0 240 4 4 56 1 0 9 0 0
+fn=_dlfo_sort_mappings
+0 184 2 2 35 0 0 16 0 0
+fn=_init_first
+0 19 2 2 7 3 1 4 2 1
+fn=_int_free
+0 2086678335 30 30 613021020 1923816 722208 338632768 28016 23393
+fn=_int_malloc
+0 378784014 180 180 75498118 703637 27903 47652450 2055369 1648977
+fn=_int_realloc
+0 223135203 106 105 42122817 1032986 18514 27262922 14392 13673
+fn=_setjmp
+0 3 1 1 0 0 0 0 0 0
+fn=access
+0 9 0 0 1 0 0 1 0 0
+fn=alloc_perturb
+0 7372460 1 1 3686230 0 0 0 0 0
+fn=allocate_dtv
+0 19 2 2 5 0 0 5 1 1
+fn=bcmp
+0 104 9 9 24 2 2 0 0 0
+fn=brk
+0 224 5 5 49 0 0 25 1 1
+fn=cache_rpath
+0 30 1 1 6 0 0 0 0 0
+fn=call_init
+0 332 5 5 118 24 0 50 0 0
+fn=calloc
+0 216 13 13 44 6 5 24 1 0
+fn=cbrt
+0 138311888 6 6 34011120 730 709 11337040 2 0
+fn=check_match
+0 13491 10 10 4496 215 130 1549 1 1
+fn=check_stdfiles_vtables
+0 12 2 2 7 4 0 0 0 0
+fn=clock_gettime@@GLIBC_2.17
+0 4400 2 2 1200 798 798 0 0 0
+fn=close
+0 8 1 1 2 0 0 0 0 0
+fn=copy_hwcaps
+0 92 2 2 22 0 0 36 3 3
+fn=cos
+0 9 2 2 4 0 0 0 0 0
+fn=cosf
+0 9 1 1 4 0 0 0 0 0
+fn=decompose_rpath
+0 1550 5 5 201 2 2 12 0 0
+fn=dfs_traversal.part.0
+0 506 7 7 157 8 8 74 0 0
+fn=dl_cet_check
+0 31 3 2 10 0 0 7 0 0
+fn=dl_main
+0 1781 90 90 444 46 29 181 16 16
+fn=do_lookup_x
+0 67532 17 17 20734 361 249 7518 3 3
+fn=do_preload
+0 28 2 2 7 0 0 8 0 0
+fn=do_tunable_update_val
+0 190 4 4 35 0 0 20 0 0
+fn=exit
+0 6 1 1 0 0 0 1 0 0
+fn=exp2f@@GLIBC_2.27
+0 9 2 2 4 0 0 0 0 0
+fn=expand_dynamic_string_token
+0 90 2 2 25 0 0 30 0 0
+fn=expf@@GLIBC_2.27
+0 9 1 1 4 0 0 0 0 0
+fn=fclose@@GLIBC_2.2.5
+0 62 6 6 17 0 0 9 0 0
+fn=fillin_rpath.isra.0
+0 436 11 11 99 0 0 87 1 1
+fn=floor
+0 7 1 1 3 0 0 0 0 0
+fn=fma
+0 6 1 1 3 0 0 0 0 0
+fn=fopen@@GLIBC_2.2.5
+0 3 1 1 0 0 0 0 0 0
+fn=free
+0 703482365 6 6 225114352 471728 111119 112557182 99 99
+fn=frexp
+0 54417792 2 2 2267408 0 0 2267408 0 0
+fn=fstat
+0 35 2 2 0 0 0 0 0 0
+fn=fstatat
+0 140 3 3 15 0 0 10 0 0
+fn=get_available_features.constprop.0
+0 315 31 31 40 0 0 18 0 0
+fn=get_common_cache_info.constprop.0
+0 222 12 12 18 0 0 13 0 0
+fn=get_common_indices.constprop.0
+0 71 5 5 9 0 0 22 3 3
+fn=getdelim
+0 3950 12 12 1245 0 0 598 0 0
+fn=getline
+0 192 1 1 0 0 0 0 0 0
+fn=getpagesize
+0 42 2 2 21 0 0 0 0 0
+fn=getrlimit
+0 20 1 1 2 0 0 0 0 0
+fn=handle_intel.constprop.0
+0 561 5 5 98 0 0 146 0 0
+fn=handle_preload_list
+0 54 4 4 13 0 0 11 1 1
+fn=has_cpu_feature.part.0.constprop.0
+0 54 1 1 12 0 0 0 0 0
+fn=index
+0 852 9 9 117 6 6 0 0 0
+fn=init_cpu_features.constprop.0
+0 387 41 41 56 1 1 116 4 4
+fn=init_tls
+0 89 4 4 22 2 1 17 0 0
+fn=intel_check_word.constprop.0
+0 5778 9 9 499 8 8 78 0 0
+fn=ldexp
+0 56685200 3 3 11337040 0 0 2267408 0 0
+fn=log2f@@GLIBC_2.27
+0 9 1 1 4 0 0 0 0 0
+fn=logf@@GLIBC_2.27
+0 9 1 1 4 0 0 0 0 0
+fn=lookup_malloc_symbol
+0 164 3 3 56 0 0 32 0 0
+fn=main
+0 230 23 23 49 7 6 80 8 3
+fn=malloc
+0 1182455949 108 107 309532203 132668 1019 168230024 0 0
+fn=malloc_consolidate
+0 103508710 39 39 18395872 2641375 48871 16559937 11675 413
+fn=map_doit
+0 15 2 2 5 0 0 3 1 1
+fn=memchr
+0 25 2 2 4 0 0 0 0 0
+fn=memcpy
+0 1108 9 9 321 2 1 243 33 33
+fn=memcpy@@GLIBC_2.14
+0 72 4 4 12 0 0 0 0 0
+fn=memmove
+0 48 4 4 8 0 0 0 0 0
+fn=mempcpy
+0 220 4 4 4 0 0 0 0 0
+fn=memrchr
+0 56 2 2 10 0 0 0 0 0
+fn=memset
+0 526 10 7 21 0 0 198 47 47
+fn=mmap
+0 207 3 2 23 0 0 0 0 0
+fn=mprotect
+0 42 2 2 7 0 0 0 0 0
+fn=mremap
+0 209 2 2 44 9 0 22 9 0
+fn=munmap
+0 24 2 2 4 0 0 0 0 0
+fn=munmap_chunk
+0 87 2 2 24 4 4 0 0 0
+fn=open
+0 35 3 3 8 0 0 7 0 0
+fn=open_path
+0 1180 15 15 456 0 0 154 6 6
+fn=open_verify.constprop.0
+0 699 9 9 166 2 2 152 1 1
+fn=openaux
+0 126 1 1 56 0 0 21 1 1
+fn=poll
+0 8 2 2 2 0 0 0 0 0
+fn=pow@@GLIBC_2.29
+0 40 2 2 10 1 1 6 1 1
+fn=powf@@GLIBC_2.27
+0 9 2 2 4 0 0 0 0 0
+fn=pthread_atfork
+0 3 0 0 1 0 0 0 0 0
+fn=pthread_attr_destroy
+0 13 1 1 5 0 0 3 0 0
+fn=pthread_attr_getstack@@GLIBC_2.34
+0 9 1 1 3 0 0 2 0 0
+fn=pthread_attr_init@@GLIBC_2.2.5
+0 14 1 1 2 0 0 7 0 0
+fn=pthread_attr_setaffinity_np@@GLIBC_2.32
+0 35 2 2 8 0 0 8 0 0
+fn=pthread_getaffinity_np@@GLIBC_2.32
+0 20 2 2 2 0 0 1 0 0
+fn=pthread_getattr_np@@GLIBC_2.32
+0 1299 16 15 321 2 0 127 0 0
+fn=pthread_mutex_lock@@GLIBC_2.2.5
+0 120 12 12 36 3 3 12 0 0
+fn=pthread_mutex_unlock@@GLIBC_2.2.5
+0 9 2 2 0 0 0 0 0 0
+fn=pthread_self
+0 3 1 1 2 0 0 0 0 0
+fn=ptmalloc_init.part.0
+0 846 9 9 9 2 1 147 33 32
+fn=rawmemchr
+0 25 3 3 4 0 0 0 0 0
+fn=realloc
+0 238464149 14 14 45295122 895552 9171 24158095 412 104
+fn=rindex
+0 28 2 2 5 0 0 0 0 0
+fn=round
+0 115601439882 102 102 6773610843 0 0 0 0 0
+fn=rtld_mutex_dummy
+0 36 1 0 12 0 0 0 0 0
+fn=sbrk
+0 613 10 10 173 66 15 98 22 5
+fn=set_cpu_feature.constprop.0
+0 162 2 2 32 0 0 0 0 0
+fn=sigaction
+0 40 1 1 0 0 0 0 0 0
+fn=sigaltstack
+0 18 4 4 3 0 0 0 0 0
+fn=signal
+0 34 3 3 6 1 0 5 1 0
+fn=sin
+0 9 1 1 4 0 0 0 0 0
+fn=sincos
+0 8 1 1 4 0 0 0 0 0
+fn=sincosf
+0 9 1 1 4 0 0 0 0 0
+fn=sinf
+0 9 1 1 4 0 0 0 0 0
+fn=stat
+0 60 0 0 0 0 0 0 0 0
+fn=stpcpy
+0 20 2 2 4 0 0 0 0 0
+fn=stpncpy
+0 22 2 2 4 0 0 0 0 0
+fn=strcasecmp
+0 24 2 2 4 0 0 0 0 0
+fn=strcasecmp_l
+0 24 3 3 4 0 0 0 0 0
+fn=strcat
+0 20 2 2 4 0 0 0 0 0
+fn=strchrnul
+0 28 2 2 5 0 0 0 0 0
+fn=strcmp
+0 23435 57 57 3965 150 97 0 0 0
+fn=strcpy
+0 20 2 2 4 0 0 0 0 0
+fn=strcspn
+0 455 8 8 234 2 2 20 4 4
+fn=strdup
+0 108 1 1 18 0 0 24 0 0
+fn=strlen
+0 1072 10 10 196 9 5 0 0 0
+fn=strncasecmp
+0 24 2 2 4 0 0 0 0 0
+fn=strncasecmp_l
+0 24 3 3 4 0 0 0 0 0
+fn=strncmp
+0 56 5 5 11 1 1 0 0 0
+fn=strncpy
+0 22 2 2 4 0 0 0 0 0
+fn=strnlen
+0 56 2 2 10 2 0 0 0 0
+fn=strpbrk
+0 7 1 1 3 0 0 0 0 0
+fn=strsep
+0 2480 2 2 387 1 1 7 0 0
+fn=strspn
+0 7 1 1 3 0 0 0 0 0
+fn=syscall
+0 768 2 2 128 0 0 0 0 0
+fn=sysconf
+0 294 16 16 54 2 2 36 0 0
+fn=sysmalloc
+0 2898 29 26 651 78 10 446 38 26
+fn=sysmalloc_mmap.constprop.0
+0 162 4 4 39 0 0 18 3 3
+fn=tcache_init.part.0
+0 112 3 3 8 0 0 84 9 9
+fn=unlink_chunk.constprop.0
+0 43301952 3 3 17130641 285747 1142 4074293 0 0
+fn=update_active.constprop.0
+0 187 17 17 39 1 1 26 1 1
+fn=version_check_doit
+0 11 2 2 4 0 0 2 0 0
+fn=wcpncpy
+0 21 3 3 4 0 0 0 0 0
+fn=wcscat
+0 21 2 2 4 0 0 0 0 0
+fn=wcschr
+0 56 3 3 10 0 0 0 0 0
+fn=wcscmp
+0 28 2 2 5 0 0 0 0 0
+fn=wcscpy
+0 19 2 2 4 0 0 0 0 0
+fn=wcslen
+0 22 3 3 4 0 0 0 0 0
+fn=wcsncpy
+0 21 3 3 4 0 0 0 0 0
+fn=wcsnlen
+0 22 2 2 4 0 0 0 0 0
+fn=wmemchr
+0 50 3 3 8 0 0 0 0 0
+fn=wmemcmp
+0 27 2 2 5 0 0 0 0 0
+fn=wmemset
+0 20 2 2 8 0 0 0 0 0
+fn=write
+0 963288 1 1 240822 96 96 0 0 0
+summary: 338706418780 4288 4267 75341496150 263979651 124187172 31803812109 30419455 23004529

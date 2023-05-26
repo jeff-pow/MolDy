@@ -1,4 +1,5 @@
 #![warn(non_snake_case)]
+#![allow(dead_code)]
 use rand::rngs::StdRng;
 use rand::Rng;
 use rayon::prelude::*;
@@ -50,13 +51,9 @@ fn main() {
     let mut pe = Vec::new();
     let mut total_e = Vec::new();
 
-    let accel = Arc::new(
-        (0..N as usize)
-            .map(|_| RwLock::from([0.0; 3]))
-            .collect::<Vec<_>>(),
-    );
 
-    let mut old_accel: Vec<[f64; 3]> = Vec::new();
+    let mut accel = Arc::new((0..N).map(|_| RwLock::from([0.0; 3])).collect::<Vec<_>>());
+
     let mut pos = face_centered_cell();
     let mut rng: StdRng = rand::SeedableRng::from_seed([3; 32]);
     let mut vel = (0..N)
@@ -84,15 +81,20 @@ fn main() {
         write_positions(&pos, &mut f, time);
         //write_dbg(&pos, &vel, &accel, &old_accel, &mut dbg_file, time);
 
-        old_accel.clear();
-        for lock in accel.iter() {
-            let guard = lock.read().unwrap();
-            old_accel.push(*guard);
-        }
+
+        let old_accel = accel
+            .iter()
+            .map(|lock| {
+                let guard = lock.read().unwrap();
+                *guard
+            })
+            .collect::<Vec<_>>();
+
         pos.iter_mut()
             .flatten()
             .zip(vel.iter().flatten())
-            .zip(accel.iter().flat_map(|guard| *guard.read().unwrap()))
+            .zip(accel.iter().flat_map(|lock| *lock.read().unwrap()))
+
             .for_each(|((pos, vel), accel)| {
                 *pos += vel * time_step + 0.5 * accel * time_step * time_step;
                 *pos -= sim_length * f64::floor(*pos / sim_length);
@@ -101,12 +103,23 @@ fn main() {
             .flatten()
             .for_each(|pos| *pos += -sim_length * f64::floor(*pos / sim_length));
 
-        let accel = Arc::new((0..N).map(|_| RwLock::from([0.0; 3])).collect::<Vec<_>>());
+        accel = Arc::new((0..N).map(|_| RwLock::from([0.0; 3])).collect::<Vec<_>>());
+
         let net_potential = calc_forces(&pos, &accel, &cell_interaction_indexes);
 
         vel.iter_mut()
             .flatten()
-            .zip(accel.iter().flat_map(|guard| *guard.read().unwrap()))
+
+            .zip(
+                accel
+                    .iter()
+                    .map(|lock| {
+                        let guard = lock.read().unwrap();
+                        *guard
+                    })
+                    .flatten(),
+            )
+
             .zip(old_accel.iter().flatten())
             .for_each(|((vel, accel), old_accel)| *vel += 0.5 * (accel + old_accel) * time_step);
 
@@ -163,7 +176,9 @@ fn calc_forces(
     }
 
     (0..cells_3d).into_par_iter().for_each(|c| {
-        let ret_val = calc_forces_on_cell(
+
+        let x = calc_forces_on_cell(
+
             c as usize,
             accel,
             pos,
@@ -171,11 +186,14 @@ fn calc_forces(
             &atom_cell_list,
             cell_interaction_indexes,
         );
-        *net_potential.write().unwrap() += ret_val;
+
+        let mut lock = net_potential.write().unwrap();
+        *lock += x
     });
 
-    let x = *net_potential.read().unwrap();
-    x
+    let net_potential = net_potential.read().unwrap();
+    *net_potential
+
 }
 
 fn calc_forces_on_cell(
