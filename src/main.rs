@@ -11,27 +11,31 @@ use std::sync::{mpsc, Arc, RwLock};
 use std::thread;
 use std::time::{Duration, Instant};
 
-const KB: f64 = 1.3806e-23;
-const NA: f64 = 6.022e23;
+const KB: f64 = 1.3806e-23; // J / K
+const NA: f64 = 6.022e23; // Avogadro's number
 
 const NUM_TIME_STEPS: i32 = 5000;
-const DT_STAR: f64 = 0.001;
+const DT_STAR: f64 = 0.001; // Reduced units of time
+// https://en.wikipedia.org/wiki/Lennard-Jones_potential#Dimensionless_(reduced_units)
 
 // Formula to find # atoms is x^3 * 4
-const N: i32 = 4000;
-const SIGMA: f64 = 3.405;
-const EPSILON: f64 = 1.654e-21;
-const EPS_STAR: f64 = EPSILON / KB;
+const N: i32 = 500;
 
-const RHOSTAR: f64 = 0.6;
-const RHO: f64 = RHOSTAR / (SIGMA * SIGMA * SIGMA);
-const R_CUTOFF: f64 = SIGMA * 2.5;
+const SIGMA: f64 = 3.405; // Resting distance between argon in angstroms
+const EPSILON: f64 = 1.654e-21; // Joules
+const EPS_STAR: f64 = EPSILON / KB; // ~ 119.8 K
+
+const RHOSTAR: f64 = 0.6; // Dimensionless density of gas
+const RHO: f64 = RHOSTAR / (SIGMA * SIGMA * SIGMA); // Density in 1 / A^3
+const R_CUTOFF: f64 = SIGMA * 2.5; // Forces are negligible past this point, not worth calculating
 const R_CUTOFF_SQUARED: f64 = R_CUTOFF * R_CUTOFF;
-const T_STAR: f64 = 1.24;
+const T_STAR: f64 = 1.24; // Reduced target temperature
 const TARGET_TEMP: f64 = T_STAR * EPS_STAR;
+// 39.9 is mass of argon in amu, 10 is a conversion between the missing units :)
 const MASS: f64 = 39.9 * 10. / NA / KB;
 const TARGET_CELL_LENGTH: f64 = R_CUTOFF;
 
+/// Method handles main loop of the simulation
 fn main() {
     let sim_length = f64::cbrt(N as f64 / RHO);
     let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH);
@@ -96,6 +100,7 @@ fn main() {
         );
         std::io::stdout().flush().unwrap();
 
+        // Send a copy of the positions to the thread that writes to the output file
         sender.send((Box::new(pos.clone()), time)).unwrap();
 
         let old_accel = accel
@@ -107,13 +112,16 @@ fn main() {
             .zip(vel.iter().flatten())
             .zip(accel.iter().flat_map(|lock| *lock.read().unwrap()))
             .for_each(|((pos, vel), accel)| {
+                // Third equation of kinematics
                 *pos += vel * time_step + 0.5 * accel * time_step * time_step;
+                // Ensures atoms stay within the virtual box
                 *pos -= sim_length * f64::floor(*pos / sim_length);
             });
 
         accel = Arc::new((0..N).map(|_| RwLock::from([0.0; 3])).collect::<Vec<_>>());
         let net_potential = calc_forces(&pos, &accel, &cell_interaction_indexes);
 
+        // Updates the velocity based on the average of the current and previous timestep
         vel.iter_mut()
             .flatten()
             .zip(accel.iter().flat_map(|lock| *lock.read().unwrap()))
@@ -166,6 +174,7 @@ fn calc_forces(
     let mut cell_header = vec![-1; cells_3d as usize];
     let mut atom_cell_list = [-1; N as usize];
 
+    // Sort the atoms into cells for the cell list algorithm
     for atom_idx in 0..N {
         let x = (pos[atom_idx as usize][0] / cell_length) as i32;
         let y = (pos[atom_idx as usize][1] / cell_length) as i32;
@@ -193,6 +202,8 @@ fn calc_forces(
     *net_potential
 }
 
+/// Method calculates interactions between a single cell and neighboring ones. 
+/// One thread is launched for each cell until every cell has been calculated
 fn calc_forces_on_cell(
     cell_idx: usize,
     accel: &[RwLock<[f64; 3]>],
@@ -204,17 +215,24 @@ fn calc_forces_on_cell(
     let mut potential = 0.0;
     let sim_length = f64::cbrt(N as f64 / RHO);
 
+    // Iterate through the required indicies
     for neighbor_idx in &cell_interaction_indexes[cell_idx] {
         let mut i = cell_header[cell_idx];
         while i > -1 {
             let mut j = cell_header[*neighbor_idx as usize];
             while j > -1 {
+                // i and j keep track of pairs of atoms, if they are in the same cell 
+                // calculate the interaction because that pair will never be visited again,
+                // otherwise only calculate if i < j, otherwise that pair has already been
+                // calculated
                 if i < j || cell_idx != *neighbor_idx as usize {
                     let dist_arr = pos[i as usize]
                         .iter()
                         .zip(pos[j as usize].iter())
                         .map(|(&a, &b)| {
                             let diff = a - b;
+                            // Calculate distance through the wall of the cell if it is nearer to
+                            // simulate boundary conditions
                             diff - sim_length * f64::round(diff / sim_length)
                         })
                         .collect::<Vec<f64>>()
@@ -302,6 +320,7 @@ fn write_dbg(
     }
 }
 
+/// Adjusts velocities to stay near target temperature
 fn thermostat(vel: &mut [[f64; 3]]) {
     let instant_temp = vel.iter().map(|x| MASS * dot(x)).sum::<f64>() / (3 * N - 3) as f64;
     let temp_scalar = f64::sqrt(TARGET_TEMP / instant_temp);
@@ -313,6 +332,7 @@ fn dot(arr: &[f64; 3]) -> f64 {
     arr.iter().map(|x| x * x).sum()
 }
 
+/// Initializes simulation in a face centered cell matrix of atoms
 fn face_centered_cell() -> Vec<[f64; 3]> {
     let n = f64::round(f64::cbrt(N as f64 / 4.));
     let sim_length = f64::cbrt(N as f64 / RHO);
@@ -368,6 +388,8 @@ fn process_cell(x: i32, y: i32, z: i32) -> i32 {
     calc_cell_index(arr[0], arr[1], arr[2])
 }
 
+/// Precalculates the indicies each cell in the cell list algorithm will have to interact with so
+/// that it does not have to be performed on the fly each timestep
 fn calc_cell_interactions() -> Vec<Vec<i32>> {
     let sim_length = f64::cbrt(N as f64 / RHO);
     let cells_per_dimension = f64::floor(sim_length / TARGET_CELL_LENGTH);
