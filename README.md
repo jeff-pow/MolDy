@@ -1,4 +1,4 @@
-# Rusty
+# MolDy (Molecular Dynamics :))
 
 This program offers an efficient solution for simulating the behavior of Argon atoms in a standard canonical ensemble (NVT). By implementing multithreading and the cell lists algorithm, computational efficiency is greatly improved, reducing the computational complexity from the normal pairwise O(N^2) algorithm to an optimized O(N).
 
