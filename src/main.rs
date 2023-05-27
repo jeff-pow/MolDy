@@ -76,7 +76,7 @@ fn main() {
         for entry in reciever {
             write_positions(&entry.0, &mut thread_file, entry.1);
             if entry.1 == NUM_TIME_STEPS - 1 {
-                break
+                break;
             }
         }
     });
@@ -96,7 +96,7 @@ fn main() {
         );
         std::io::stdout().flush().unwrap();
 
-         sender.send((Box::new(pos.clone()), time)).unwrap();
+        sender.send((Box::new(pos.clone()), time)).unwrap();
 
         let old_accel = accel
             .iter()
